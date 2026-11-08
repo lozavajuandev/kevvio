@@ -1,0 +1,83 @@
+export type Property = {
+  id: string;
+  name: string;
+  kind: string;
+  address: string;
+  city: string;
+  area: string;
+  bedrooms: number;
+  bathrooms: number;
+  purchase_value: string;
+  notes: string;
+  archived_at: string | null;
+};
+export type Tenant = {
+  id: string;
+  name: string;
+  document: string;
+  email: string;
+  phone: string;
+  notes: string;
+};
+export type Lease = {
+  id: string;
+  property_id: string;
+  tenant_id: string;
+  property_name: string;
+  tenant_name: string;
+  start_date: string;
+  end_date: string;
+  rent: string;
+  administration: string;
+  due_day: number;
+  status: string;
+  notes: string;
+};
+export type Charge = {
+  id: string;
+  lease_id: string;
+  property_id: string;
+  tenant_id: string;
+  property_name: string;
+  tenant_name: string;
+  period: string;
+  due_date: string;
+  amount: string;
+  paid: string;
+  balance: string;
+};
+export type Payment = {
+  id: string;
+  charge_id: string;
+  property_name: string;
+  tenant_name: string;
+  period: string;
+  amount: string;
+  paid_on: string;
+  method: string;
+  reference: string;
+  notes: string;
+  voided_at: string | null;
+  void_reason: string | null;
+};
+export type Document = {
+  id: string;
+  property_id: string;
+  lease_id: string | null;
+  property_name: string;
+  title: string;
+  category: string;
+  filename: string;
+  size_bytes: string;
+  expires_on: string | null;
+};
+export type Snapshot = {
+  user: { id: string; name: string };
+  today: string;
+  properties: Property[];
+  tenants: Tenant[];
+  leases: Lease[];
+  charges: Charge[];
+  payments: Payment[];
+  documents: Document[];
+};
