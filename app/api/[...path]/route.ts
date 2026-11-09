@@ -26,6 +26,7 @@ import { generateCharges, registerPayment } from "@/lib/billing";
 import { mkdir, writeFile, readFile, unlink } from "node:fs/promises";
 import { resolve, join } from "node:path";
 import { randomUUID } from "node:crypto";
+import { inventoryApi } from "@/lib/inventory-api";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 const uploads = () =>
@@ -100,6 +101,8 @@ async function handle(
     }
     const user = await userFor(req);
     if (!user) throw new AppError(401, "Inicia sesión para continuar.");
+    const inventoryResponse = await inventoryApi(req, parts);
+    if (inventoryResponse) return inventoryResponse;
     if (route === "logout" && req.method === "POST") {
       const token = req.cookies.get("raiz_session")?.value;
       await db.query("DELETE FROM sessions WHERE token_hash=$1", [
@@ -112,7 +115,9 @@ async function handle(
     if (route === "snapshot" && req.method === "GET") {
       const [properties, tenants, leases, charges, payments, documents] =
         await Promise.all([
-          db.query("SELECT * FROM properties ORDER BY created_at DESC"),
+          db.query(
+            "SELECT p.*,(SELECT id FROM property_photos WHERE property_id=p.id AND is_cover LIMIT 1) AS cover_photo_id FROM properties p ORDER BY p.created_at DESC",
+          ),
           db.query("SELECT * FROM tenants ORDER BY name"),
           db.query(
             `SELECT l.*,p.name AS property_name,t.name AS tenant_name FROM leases l JOIN properties p ON p.id=l.property_id JOIN tenants t ON t.id=l.tenant_id ORDER BY l.created_at DESC`,

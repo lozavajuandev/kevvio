@@ -9,6 +9,8 @@ import {
 } from "react";
 import {
   Building2,
+  ClipboardList,
+  Camera,
   LayoutDashboard,
   UsersRound,
   FileText,
@@ -50,6 +52,8 @@ import type {
   Payment,
   Document,
 } from "@/lib/types";
+import PropertyInventory from "./property-inventory";
+import { api } from "@/lib/client-api";
 const money = (v: string | number) =>
   new Intl.NumberFormat("es-CO", {
     style: "currency",
@@ -76,6 +80,7 @@ const localToday = () =>
 type View =
   | "overview"
   | "properties"
+  | "inventory"
   | "tenants"
   | "leases"
   | "charges"
@@ -98,27 +103,13 @@ type Panel = {
 const nav = [
   { id: "overview", label: "Resumen", icon: LayoutDashboard },
   { id: "properties", label: "Inmuebles", icon: Building2 },
+  { id: "inventory", label: "Fotos e inventario", icon: ClipboardList },
   { id: "tenants", label: "Arrendatarios", icon: UsersRound },
   { id: "leases", label: "Contratos", icon: FileText },
   { id: "charges", label: "Cobros", icon: Wallet },
   { id: "payments", label: "Pagos", icon: ReceiptText },
   { id: "documents", label: "Documentos", icon: FolderOpen },
 ] as const;
-async function api(path: string, method = "GET", data?: unknown) {
-  const isForm = data instanceof FormData;
-  const response = await fetch("/api/" + path, {
-    method,
-    headers:
-      data && !isForm ? { "Content-Type": "application/json" } : undefined,
-    body: data ? (isForm ? data : JSON.stringify(data)) : undefined,
-  });
-  const result = await response.json();
-  if (!response.ok)
-    throw new Error(
-      result.error + (result.details ? " " + result.details.join(" · ") : ""),
-    );
-  return result;
-}
 function Badge({
   children,
   tone = "neutral",
@@ -200,6 +191,7 @@ export default function Workspace() {
   const [view, setView] = useState<View>("overview"),
     [panel, setPanel] = useState<Panel | null>(null),
     [mobileNav, setMobileNav] = useState(false);
+  const [inventoryPropertyId, setInventoryPropertyId] = useState("");
   const [search, setSearch] = useState(""),
     [month, setMonth] = useState(localToday().slice(0, 7)),
     [filter, setFilter] = useState("all"),
@@ -518,6 +510,11 @@ export default function Workspace() {
       title: "Inmuebles",
       description: "Cada espacio, con toda su información a mano.",
     },
+    inventory: {
+      title: "Fotos e inventario",
+      description:
+        "Cada espacio, cada elemento y su estado, con evidencia fotográfica.",
+    },
     tenants: {
       title: "Arrendatarios",
       description: "Las personas detrás de cada contrato.",
@@ -639,10 +636,12 @@ export default function Workspace() {
               <h1>{titles[view].title}</h1>
               <p>{titles[view].description}</p>
             </div>
-            <button className="button primary" onClick={primary}>
-              <Plus size={17} />
-              {primaryLabel}
-            </button>
+            {view !== "inventory" && (
+              <button className="button primary" onClick={primary}>
+                <Plus size={17} />
+                {primaryLabel}
+              </button>
+            )}
           </div>
           {error && !panel && (
             <div role="alert" className="error">
@@ -657,7 +656,21 @@ export default function Workspace() {
               </button>
             </div>
           )}
-          {view === "overview" ? (
+          {view === "inventory" ? (
+            <PropertyInventory
+              key={inventoryPropertyId || data.properties[0]?.id || "empty"}
+              properties={data.properties}
+              propertyId={
+                inventoryPropertyId ||
+                data.properties.find((p) => !p.archived_at)?.id ||
+                data.properties[0]?.id ||
+                ""
+              }
+              onPropertyChange={setInventoryPropertyId}
+              onChanged={refresh}
+              onCreateProperty={() => open({ type: "property" })}
+            />
+          ) : view === "overview" ? (
             <>
               <div className="section-line">
                 <h2>Balance del mes</h2>
@@ -1050,6 +1063,16 @@ export default function Workspace() {
                           key={p.id}
                           onClick={() => open({ type: "detail", item: p })}
                         >
+                          {p.cover_photo_id && (
+                            <img
+                              className="property-cover"
+                              src={
+                                "/api/photos/" + p.cover_photo_id + "/thumbnail"
+                              }
+                              alt={"Vista de " + p.name}
+                              loading="lazy"
+                            />
+                          )}
                           <div className="property-card-top">
                             <span className="property-type">
                               <Building2 size={19} />
@@ -1588,6 +1611,11 @@ export default function Workspace() {
               mutate={mutate}
               open={open}
               money={money}
+              onInventory={(id) => {
+                setPanel(null);
+                setInventoryPropertyId(id);
+                go("inventory");
+              }}
             />
           </div>
         </div>
@@ -1634,6 +1662,7 @@ function DataTable({
   );
 }
 type PanelProps = {
+  onInventory: (id: string) => void;
   panel: Panel;
   data: Snapshot;
   busy: boolean;
@@ -1646,7 +1675,14 @@ type PanelProps = {
   open: (p: Panel) => void;
   money: (v: string | number) => string;
 };
-function PanelContent({ panel, data, busy, mutate, open }: PanelProps) {
+function PanelContent({
+  panel,
+  data,
+  busy,
+  mutate,
+  open,
+  onInventory,
+}: PanelProps) {
   const p = panel.item as Property | undefined,
     t = panel.item as Tenant | undefined,
     l = panel.item as Lease | undefined,
@@ -2161,6 +2197,26 @@ function PanelContent({ panel, data, busy, mutate, open }: PanelProps) {
       docs = data.documents.filter((d) => d.property_id === p.id);
     return (
       <div className="detail-content">
+        {p.cover_photo_id && (
+          <img
+            className="detail-cover"
+            src={"/api/photos/" + p.cover_photo_id + "/file"}
+            alt={"Vista de " + p.name}
+          />
+        )}
+        <button
+          className="inventory-dossier-link"
+          onClick={() => onInventory(p.id)}
+        >
+          <span>
+            <Camera size={20} />
+            <strong>Fotos e inventario</strong>
+          </span>
+          <span>
+            Ver espacios y elementos
+            <ChevronRight size={16} />
+          </span>
+        </button>
         <div className="detail-tools">
           <Badge tone={p.archived_at ? "neutral" : "green"}>
             {p.kind}

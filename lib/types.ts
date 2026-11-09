@@ -10,6 +10,7 @@ export type Property = {
   purchase_value: string;
   notes: string;
   archived_at: string | null;
+  cover_photo_id?: string | null;
 };
 export type Tenant = {
   id: string;
@@ -80,4 +81,61 @@ export type Snapshot = {
   charges: Charge[];
   payments: Payment[];
   documents: Document[];
+};
+export type PropertySpace = {
+  id: string;
+  property_id: string;
+  name: string;
+  floor: string;
+  notes: string;
+};
+export type InventoryItem = {
+  id: string;
+  property_id: string;
+  space_id: string | null;
+  space_name: string | null;
+  name: string;
+  category: string;
+  quantity: string;
+  unit: string;
+  condition: string;
+  brand: string;
+  model: string;
+  serial_number: string;
+  material: string;
+  color: string;
+  dimensions: string;
+  unit_value: string;
+  ownership: string;
+  inspected_on: string | null;
+  notes: string;
+  attributes: { name: string; value: string }[];
+  archived_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+export type PropertyPhoto = {
+  id: string;
+  property_id: string;
+  inventory_item_id: string | null;
+  caption: string;
+  original_filename: string;
+  width: number;
+  height: number;
+  size_bytes: string;
+  is_cover: boolean;
+  archived_at: string | null;
+  created_at: string;
+};
+export type PropertyInventoryData = {
+  property: Property;
+  spaces: PropertySpace[];
+  items: InventoryItem[];
+  photos: PropertyPhoto[];
+};
+export type InventoryHistory = {
+  id: string;
+  action: string;
+  snapshot: InventoryItem;
+  created_at: string;
 };

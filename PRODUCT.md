@@ -24,7 +24,7 @@ Confirmado: PostgreSQL en Docker en este Mac, con migraciones versionadas. Next.
 
 ## Capabilities and Constraints
 
-Datos persistentes. Inmuebles, arrendatarios, contratos, cobros mensuales, abonos y documentos. Supuesto de trabajo: Colombia y COP. No integración bancaria ni envío de mensajes solicitado.
+Datos persistentes. Inmuebles, arrendatarios, contratos, cobros mensuales, abonos y documentos. Fotos del inmueble y de cada elemento. Inventario completo organizado por espacios, con cantidades, estados, atributos libres, captura rápida, historial y exportación. Supuesto de trabajo: Colombia y COP. No integración bancaria ni envío de mensajes solicitado.
 
 ## Evidence on Hand
 

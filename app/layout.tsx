@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./inventory.css";
 export const metadata: Metadata = {
   title: "Raíz · Gestión de inmuebles",
   description:

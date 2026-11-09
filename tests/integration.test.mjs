@@ -6,6 +6,7 @@ import { randomUUID } from "node:crypto";
 import { setTimeout as delay } from "node:timers/promises";
 import { migrate } from "../scripts/migrate.mjs";
 import { resolve } from "node:path";
+import sharp from "sharp";
 
 test(
   "Flujo completo con PostgreSQL aislado, integridad y persistencia",
@@ -410,6 +411,451 @@ test(
           );
           assert.equal(charges.length, 1);
           assert.equal(Number(charges[0].balance), 120000);
+        },
+      );
+      let inventoryProperty, otherProperty, space, otherSpace, inventoryItem;
+      await t.test(
+        "Inventario: espacios y elementos completamente personalizables",
+        async () => {
+          inventoryProperty = await create("properties", {
+            name: "Inmueble inventario",
+            kind: "Casa",
+            address: "Dirección de prueba",
+            city: "Bogotá",
+          });
+          otherProperty = await create("properties", {
+            name: "Otro inmueble",
+            kind: "Apartamento",
+            address: "Prueba",
+            city: "Bogotá",
+          });
+          space = await create("spaces", {
+            property_id: inventoryProperty.id,
+            name: "Baño principal",
+            floor: "Piso 2",
+            notes: "Revisión de entrega",
+          });
+          otherSpace = await create("spaces", {
+            property_id: otherProperty.id,
+            name: "Cocina",
+          });
+          assert.equal(
+            (
+              await request("spaces", "POST", {
+                property_id: inventoryProperty.id,
+                name: "BAÑO PRINCIPAL",
+              })
+            ).status,
+            409,
+          );
+          inventoryItem = await create("inventory-items", {
+            property_id: inventoryProperty.id,
+            space_id: space.id,
+            name: "Toma doble",
+            category: "Instalación especial",
+            quantity: 2,
+            unit: "unidad",
+            condition: "Bueno",
+            brand: "Prueba",
+            model: "Doble",
+            serial_number: "INV-1",
+            material: "Policarbonato",
+            color: "Blanco",
+            dimensions: "8 × 12 cm",
+            unit_value: 15000,
+            ownership: "Propietario",
+            inspected_on: today,
+            notes: "Sin grietas",
+            attributes: [
+              { name: "Voltaje", value: "110 V" },
+              { name: "Puesta a tierra", value: "Sí" },
+            ],
+          });
+          const s = (await request("inventory/" + inventoryProperty.id)).data;
+          assert.equal(s.spaces.length, 1);
+          assert.equal(s.items.length, 1);
+          assert.equal(s.items[0].attributes[0].value, "110 V");
+          assert.equal(s.items[0].space_name, "Baño principal");
+          assert.equal(
+            (
+              await request(
+                "inventory/" + inventoryProperty.id,
+                "GET",
+                undefined,
+                false,
+              )
+            ).status,
+            401,
+          );
+          assert.equal(
+            (
+              await request("inventory-items", "POST", {
+                property_id: inventoryProperty.id,
+                space_id: otherSpace.id,
+                name: "Cruce inválido",
+              })
+            ).status,
+            400,
+          );
+          assert.equal(
+            (
+              await request("inventory-items", "POST", {
+                property_id: inventoryProperty.id,
+                name: "Cantidad inválida",
+                quantity: -1,
+              })
+            ).status,
+            400,
+          );
+          assert.equal(
+            (await request("spaces/" + space.id, "DELETE")).status,
+            409,
+          );
+        },
+      );
+      await t.test(
+        "Inventario: carga múltiple atómica, cantidades y unidades",
+        async () => {
+          const before = (await request("inventory/" + inventoryProperty.id))
+            .data.items.length;
+          assert.equal(
+            (
+              await request("inventory-items/batch", "POST", {
+                items: [
+                  {
+                    property_id: inventoryProperty.id,
+                    space_id: space.id,
+                    name: "No debe persistir",
+                  },
+                  {
+                    property_id: inventoryProperty.id,
+                    space_id: otherSpace.id,
+                    name: "Espacio ajeno",
+                  },
+                ],
+              })
+            ).status,
+            400,
+          );
+          assert.equal(
+            (await request("inventory/" + inventoryProperty.id)).data.items
+              .length,
+            before,
+          );
+          const r = await create("inventory-items/batch", {
+            items: [
+              {
+                property_id: inventoryProperty.id,
+                space_id: space.id,
+                name: "Lavabo",
+                category: "Sanitario",
+                quantity: 1,
+              },
+              {
+                property_id: inventoryProperty.id,
+                space_id: space.id,
+                name: "Inodoro",
+                quantity: 1,
+              },
+              {
+                property_id: inventoryProperty.id,
+                name: "Enchape",
+                quantity: 12.5,
+                unit: "m²",
+              },
+            ],
+          });
+          assert.equal(r.items.length, 3);
+          assert.equal(Number(r.items[2].quantity), 12.5);
+          assert.equal(r.items[0].condition, "Por revisar");
+        },
+      );
+      await t.test(
+        "Inventario: edición, archivo, restauración e historial",
+        async () => {
+          const edit = await request(
+            "inventory-items/" + inventoryItem.id,
+            "PATCH",
+            { ...inventoryItem, condition: "Regular", notes: "Una tapa rota" },
+          );
+          assert.equal(edit.status, 200);
+          assert.equal(
+            (
+              await request("inventory-items/" + inventoryItem.id, "PATCH", {
+                archived: true,
+              })
+            ).status,
+            200,
+          );
+          assert.equal(
+            (
+              await request("inventory-items/" + inventoryItem.id, "PATCH", {
+                ...inventoryItem,
+                name: "Edición archivada",
+              })
+            ).status,
+            409,
+          );
+          assert.equal(
+            (
+              await request("inventory-items/" + inventoryItem.id, "PATCH", {
+                archived: false,
+              })
+            ).status,
+            200,
+          );
+          const h = (
+            await request("inventory-items/" + inventoryItem.id + "/history")
+          ).data;
+          assert.equal(h.length, 4);
+          assert.equal(h[0].action, "Restaurado");
+          assert.ok(h.some((x) => x.snapshot.condition === "Bueno"));
+          assert.ok(h.some((x) => x.snapshot.notes === "Una tapa rota"));
+          assert.equal(
+            (
+              await request("inventory-items/" + inventoryItem.id, "PATCH", {
+                ...inventoryItem,
+                property_id: otherProperty.id,
+              })
+            ).status,
+            400,
+          );
+        },
+      );
+      let generalPhotos, elementPhoto;
+      const imageBytes = await sharp({
+        create: { width: 80, height: 40, channels: 3, background: "#235f4d" },
+      })
+        .png()
+        .toBuffer();
+      function photoForm(propertyId, itemId = null, files = [imageBytes]) {
+        const f = new FormData();
+        f.set("property_id", propertyId);
+        if (itemId) f.set("inventory_item_id", itemId);
+        f.set("caption", "Evidencia de prueba");
+        files.forEach((bytes, i) =>
+          f.append(
+            "files",
+            new Blob([bytes], { type: "image/png" }),
+            "foto-" + i + ".png",
+          ),
+        );
+        return f;
+      }
+      await t.test(
+        "Fotos: múltiples imágenes, portada, miniatura y acceso privado",
+        async () => {
+          generalPhotos = (
+            await create(
+              "photos",
+              photoForm(inventoryProperty.id, null, [imageBytes, imageBytes]),
+            )
+          ).photos;
+          assert.equal(generalPhotos.length, 2);
+          const photos = (await request("inventory/" + inventoryProperty.id))
+            .data.photos;
+          assert.equal(photos.filter((p) => p.is_cover).length, 1);
+          const photo = photos.find((p) => p.is_cover);
+          assert.equal(
+            (await request("snapshot")).data.properties.find(
+              (p) => p.id === inventoryProperty.id,
+            ).cover_photo_id,
+            photo.id,
+          );
+          const response = await fetch(
+            origin + "/api/photos/" + photo.id + "/file",
+            { headers: { cookie } },
+          );
+          assert.equal(response.status, 200);
+          assert.equal(response.headers.get("content-type"), "image/webp");
+          const metadata = await sharp(
+            Buffer.from(await response.arrayBuffer()),
+          ).metadata();
+          assert.equal(metadata.width, 80);
+          assert.equal(metadata.height, 40);
+          assert.equal(metadata.exif, undefined);
+          assert.equal(
+            (
+              await fetch(origin + "/api/photos/" + photo.id + "/thumbnail", {
+                headers: { cookie },
+              })
+            ).status,
+            200,
+          );
+          assert.equal(
+            (
+              await request(
+                "photos/" + photo.id + "/file",
+                "GET",
+                undefined,
+                false,
+              )
+            ).status,
+            401,
+          );
+          const download = await fetch(
+            origin + "/api/photos/" + photo.id + "/file?download=1",
+            { headers: { cookie } },
+          );
+          assert.match(
+            download.headers.get("content-disposition"),
+            /^attachment/,
+          );
+          elementPhoto = (
+            await create(
+              "photos",
+              photoForm(inventoryProperty.id, inventoryItem.id),
+            )
+          ).photos[0];
+          assert.equal(elementPhoto.inventory_item_id, inventoryItem.id);
+          assert.equal(
+            (
+              await request("photos/" + elementPhoto.id, "PATCH", {
+                is_cover: true,
+              })
+            ).status,
+            400,
+          );
+        },
+      );
+      await t.test(
+        "Fotos: validación real del archivo y de pertenencia",
+        async () => {
+          const count = (await request("inventory/" + inventoryProperty.id))
+            .data.photos.length;
+          assert.equal(
+            (
+              await request(
+                "photos",
+                "POST",
+                photoForm(inventoryProperty.id, null, [
+                  imageBytes,
+                  Buffer.from('<svg onload="alert(1)"></svg>'),
+                ]),
+              )
+            ).status,
+            400,
+          );
+          assert.equal(
+            (await request("inventory/" + inventoryProperty.id)).data.photos
+              .length,
+            count,
+          );
+          assert.equal(
+            (
+              await request(
+                "photos",
+                "POST",
+                photoForm(otherProperty.id, inventoryItem.id),
+              )
+            ).status,
+            400,
+          );
+          assert.equal(
+            (
+              await request(
+                "photos",
+                "POST",
+                photoForm(inventoryProperty.id, null, [
+                  Buffer.alloc(10 * 1024 * 1024 + 1),
+                ]),
+              )
+            ).status,
+            400,
+          );
+        },
+      );
+      await t.test(
+        "Fotos: archivo reversible y una sola portada tras concurrencia",
+        async () => {
+          const old = (
+            await request("inventory/" + inventoryProperty.id)
+          ).data.photos.find((p) => p.is_cover);
+          assert.equal(
+            (await request("photos/" + old.id, "PATCH", { archived: true }))
+              .status,
+            200,
+          );
+          let photos = (await request("inventory/" + inventoryProperty.id)).data
+            .photos;
+          assert.equal(photos.filter((p) => p.is_cover).length, 1);
+          assert.notEqual(photos.find((p) => p.is_cover).id, old.id);
+          assert.equal(
+            (
+              await request("photos/" + old.id, "PATCH", {
+                archived: false,
+                caption: "Fachada restaurada",
+              })
+            ).status,
+            200,
+          );
+          const results = await Promise.all(
+            generalPhotos.map((p) =>
+              request("photos/" + p.id, "PATCH", { is_cover: true }),
+            ),
+          );
+          assert.ok(results.every((r) => r.status === 200));
+          photos = (await request("inventory/" + inventoryProperty.id)).data
+            .photos;
+          assert.equal(photos.filter((p) => p.is_cover).length, 1);
+          assert.equal(
+            photos.find((p) => p.id === old.id).caption,
+            "Fachada restaurada",
+          );
+        },
+      );
+      await t.test(
+        "Inventario: exportación segura y persistencia al reiniciar",
+        async () => {
+          await create("inventory-items", {
+            property_id: inventoryProperty.id,
+            name: "=SUM(1,2)",
+            notes: "Nota; con separador",
+          });
+          const csv = await request(
+            "inventory/" + inventoryProperty.id + "/export",
+          );
+          assert.equal(csv.status, 200);
+          assert.match(csv.data, /Voltaje/);
+          assert.match(csv.data, /"'=SUM/);
+          assert.match(csv.data, /Nota; con separador/);
+          await stop();
+          await start();
+          const d = (await request("inventory/" + inventoryProperty.id)).data;
+          assert.equal(d.spaces.length, 1);
+          assert.equal(d.items.length, 5);
+          assert.equal(d.photos.length, 3);
+          assert.equal(
+            (
+              await fetch(origin + "/api/photos/" + elementPhoto.id + "/file", {
+                headers: { cookie },
+              })
+            ).status,
+            200,
+          );
+          assert.equal(
+            (await request("properties/" + inventoryProperty.id, "DELETE"))
+              .status,
+            200,
+          );
+          assert.equal(
+            (
+              await request("inventory-items", "POST", {
+                property_id: inventoryProperty.id,
+                name: "No permitido",
+              })
+            ).status,
+            409,
+          );
+          assert.equal(
+            (await request("photos", "POST", photoForm(inventoryProperty.id)))
+              .status,
+            409,
+          );
+          assert.equal(
+            (await request("inventory/" + inventoryProperty.id)).status,
+            200,
+          );
         },
       );
     } finally {

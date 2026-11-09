@@ -23,6 +23,9 @@ En este equipo ya se generó `.env` con credenciales aleatorias y se aplicaron l
 ## Funcionalidades
 
 - Crear, editar y archivar inmuebles; consultar su expediente.
+- Galería de fotos del inmueble con portada, descripciones, descarga y archivo/restauración; fotos propias de cada elemento del inventario.
+- Inventario por espacios (habitaciones, baños, cocina, exteriores o cualquier espacio propio), con categorías y unidades personalizables. Cantidad, estado, marca, modelo, serial, material, color, dimensiones, valor unitario, propietario, fecha de revisión, notas y campos adicionales.
+- Captura individual o selección rápida de elementos comunes: tomas, interruptores, luminarias, lavamanos, inodoros, closets, puertas, electrodomésticos, acabados y más. Duplicación, búsqueda, filtros, historial de cambios y exportación CSV.
 - Crear y editar arrendatarios y sus datos de contacto.
 - Contratos con canon, administración, día de pago y vigencia. PostgreSQL impide contratos activos superpuestos para el mismo inmueble.
 - Cobros mensuales únicos por contrato. Se generan al crear un contrato y mediante **Generar cobros del mes**. Esta acción completa meses faltantes hasta el actual.
@@ -38,9 +41,18 @@ En este equipo ya se generó `.env` con credenciales aleatorias y se aplicaron l
 - Base / usuario: `raiz` / `raiz`; contraseña en `.env`.
 - Volumen: `raiz-activos_postgres_data`.
 - Esquema inicial: `migrations/001_initial.sql`.
-- Tablas: `users`, `sessions`, `properties`, `tenants`, `leases`, `charges`, `payments`, `documents` y `schema_migrations`.
+- Fotos e inventario: `migrations/002_property_inventory_photos.sql`.
+- Tablas: `users`, `sessions`, `properties`, `tenants`, `leases`, `charges`, `payments`, `documents`, `property_spaces`, `inventory_items`, `inventory_history`, `property_photos` y `schema_migrations`.
 
-El ejecutor toma un bloqueo de PostgreSQL, verifica SHA-256 de migraciones ya aplicadas y ejecuta cada archivo nuevo en una transacción. Se puede ejecutar repetidamente sin duplicar datos. Para cambios futuros, agregar `002_descripcion.sql`, sin modificar migraciones aplicadas, y ejecutar `npm run db:migrate`.
+El ejecutor toma un bloqueo de PostgreSQL, verifica SHA-256 de migraciones ya aplicadas y ejecuta cada archivo nuevo en una transacción. Se puede ejecutar repetidamente sin duplicar datos. Para cambios futuros, agregar `003_descripcion.sql`, sin modificar migraciones aplicadas, y ejecutar `npm run db:migrate`.
+
+## Fotos e inventario
+
+Abrir **Fotos e inventario** en el menú y elegir un inmueble, o entrar desde su expediente. Crear los espacios y agregar elementos individualmente o con **Agregar varios**. El catálogo es una ayuda inicial: los nombres, categorías, unidades y detalles adicionales son libres. Para registrar diferencias de estado o serial, usar fichas separadas; para elementos iguales, registrar la cantidad.
+
+Se aceptan JPG, PNG y WebP estáticos: hasta 10 MB y 40 megapíxeles por imagen, 12 fotos y 50 MB por carga. Se valida el contenido del archivo; se corrige la orientación y se guarda una versión WebP optimizada de hasta 2400 px, junto con su miniatura. No se conserva el original ni sus metadatos EXIF. Las fotos solo se sirven con sesión iniciada.
+
+Los elementos y fotos se archivan de forma reversible. El historial conserva los datos de cada creación, edición, archivo y restauración de un elemento; no constituye un acta firmada de entrega. Un espacio con elementos, incluso archivados, no puede eliminarse. Los inmuebles archivados permiten consultar y exportar su inventario, sin modificarlo. El CSV incluye los elementos activos y sus atributos, sin imágenes.
 
 ```sh
 docker compose ps
@@ -54,7 +66,7 @@ No usar `docker compose down -v`: eliminaría el volumen de datos. Cambiar POSTG
 
 ## Documentos y respaldos
 
-Los archivos se guardan en `.data/uploads` con nombres aleatorios, sin acceso estático público. La base almacena sus metadatos. Ambos deben conservarse juntos.
+Los archivos se guardan en `.data/uploads` con nombres aleatorios, sin acceso estático público. Las fotos y miniaturas están en su subdirectorio `photos/`. La base almacena sus metadatos. Ambos deben conservarse juntos; el respaldo incluye documentos y fotos.
 
 Con la aplicación detenida (sin escrituras en curso), ejecutar:
 
