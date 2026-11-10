@@ -1,4 +1,5 @@
 "use client";
+import BrandMark from "./brand-mark";
 import {
   useState,
   useEffect,
@@ -9,8 +10,6 @@ import {
 } from "react";
 import {
   Building2,
-  ClipboardList,
-  Camera,
   LayoutDashboard,
   UsersRound,
   FileText,
@@ -52,7 +51,11 @@ import type {
   Payment,
   Document,
 } from "@/lib/types";
-import PropertyInventory from "./property-inventory";
+import PropertyBoard, { type PropertyTab } from "./property-board";
+import PropertyWorkspace from "./property-workspace";
+import CommandMenu from "./command-menu";
+import PropertyWizard from "./property-wizard";
+import PeopleWorkspace from "./people-workspace";
 import { api } from "@/lib/client-api";
 const money = (v: string | number) =>
   new Intl.NumberFormat("es-CO", {
@@ -80,7 +83,6 @@ const localToday = () =>
 type View =
   | "overview"
   | "properties"
-  | "inventory"
   | "tenants"
   | "leases"
   | "charges"
@@ -99,12 +101,12 @@ type Panel = {
     | "archive";
   item?: Property | Tenant | Lease | Charge | Payment;
   propertyId?: string;
+  tenantId?: string;
 };
 const nav = [
-  { id: "overview", label: "Resumen", icon: LayoutDashboard },
   { id: "properties", label: "Inmuebles", icon: Building2 },
-  { id: "inventory", label: "Fotos e inventario", icon: ClipboardList },
-  { id: "tenants", label: "Arrendatarios", icon: UsersRound },
+  { id: "overview", label: "Resumen", icon: LayoutDashboard },
+  { id: "tenants", label: "Personas", icon: UsersRound },
   { id: "leases", label: "Contratos", icon: FileText },
   { id: "charges", label: "Cobros", icon: Wallet },
   { id: "payments", label: "Pagos", icon: ReceiptText },
@@ -188,14 +190,155 @@ export default function Workspace() {
     [error, setError] = useState(""),
     [toast, setToast] = useState(""),
     [busy, setBusy] = useState(false);
-  const [view, setView] = useState<View>("overview"),
+  const [view, setView] = useState<View>("properties"),
     [panel, setPanel] = useState<Panel | null>(null),
     [mobileNav, setMobileNav] = useState(false);
-  const [inventoryPropertyId, setInventoryPropertyId] = useState("");
+  const [propertyId, setPropertyId] = useState("");
+  const [creatingProperty, setCreatingProperty] = useState(false);
+  const [createPersonRequest, setCreatePersonRequest] = useState(0);
+  const [propertyTab, setPropertyTab] = useState<PropertyTab>("general");
+  const [propertyDirty, setPropertyDirty] = useState(false);
+  const [commandOpen, setCommandOpen] = useState(false);
+  const navigationIndex = useRef(0),
+    dirtyRef = useRef(false),
+    revertingNavigation = useRef(false);
+  useEffect(() => {
+    dirtyRef.current = propertyDirty;
+  }, [propertyDirty]);
+  useEffect(() => {
+    history.replaceState({ ...history.state, raizIndex: 0 }, "", location.href);
+    const read = () => {
+      const q = new URLSearchParams(location.search);
+      const v = q.get("vista");
+      setView(nav.some((n) => n.id === v) ? (v as View) : "properties");
+      setPropertyId(q.get("inmueble") || "");
+      setCreatingProperty(q.get("crear") === "inmueble");
+      const t = q.get("seccion");
+      setPropertyTab(
+        ["general", "photos", "inventory", "listing", "videos"].includes(
+          t || "",
+        )
+          ? (t as PropertyTab)
+          : "general",
+      );
+      setPropertyDirty(false);
+    };
+    const pop = (event: PopStateEvent) => {
+      if (revertingNavigation.current) {
+        revertingNavigation.current = false;
+        return;
+      }
+      const nextIndex = event.state?.raizIndex ?? 0;
+      if (
+        dirtyRef.current &&
+        !window.confirm(
+          "Tienes cambios sin guardar. ¿Quieres salir y descartarlos?",
+        )
+      ) {
+        revertingNavigation.current = true;
+        history.go(navigationIndex.current - nextIndex);
+        return;
+      }
+      navigationIndex.current = nextIndex;
+      read();
+    };
+    read();
+    window.addEventListener("popstate", pop);
+    const key = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        const existingDialog = document.querySelector(
+          'dialog[open], [role="dialog"]',
+        );
+        if (
+          existingDialog &&
+          !existingDialog.classList.contains("command-menu")
+        )
+          return;
+        e.preventDefault();
+        setCommandOpen((v) => !v);
+      }
+    };
+    window.addEventListener("keydown", key);
+    return () => {
+      window.removeEventListener("popstate", pop);
+      window.removeEventListener("keydown", key);
+    };
+  }, []);
+  useEffect(() => {
+    if (!propertyDirty) return;
+    const warn = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [propertyDirty]);
+  useEffect(() => {
+    if (!mobileNav) return;
+    const returnFocus = document.activeElement as HTMLElement | null;
+    document
+      .getElementById("primary-navigation")
+      ?.querySelector<HTMLElement>("button")
+      ?.focus();
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMobileNav(false);
+    };
+    document.addEventListener("keydown", escape);
+    return () => {
+      document.removeEventListener("keydown", escape);
+      returnFocus?.focus();
+    };
+  }, [mobileNav]);
+  function canLeave() {
+    if (
+      propertyDirty &&
+      !window.confirm(
+        "Tienes cambios sin guardar. ¿Quieres salir y descartarlos?",
+      )
+    )
+      return false;
+    setPropertyDirty(false);
+    return true;
+  }
+  function route(
+    v: View,
+    id = "",
+    tab: PropertyTab = "general",
+    create = false,
+  ) {
+    const q = new URLSearchParams();
+    if (v !== "properties") q.set("vista", v);
+    if (create) q.set("crear", "inmueble");
+    if (id) {
+      q.set("inmueble", id);
+      q.set("seccion", tab);
+    }
+    navigationIndex.current += 1;
+    history.pushState(
+      { raizIndex: navigationIndex.current },
+      "",
+      q.size ? "/app?" + q : "/app",
+    );
+  }
+  function selectProperty(id: string, tab: PropertyTab = "general") {
+    if (!canLeave()) return;
+    setView("properties");
+    setCreatingProperty(false);
+    setPropertyId(id);
+    setPropertyTab(tab);
+    setPanel(null);
+    setMobileNav(false);
+    route("properties", id, tab);
+  }
+  function changePropertyTab(tab: PropertyTab) {
+    if (tab === propertyTab || !canLeave()) return;
+    setPropertyTab(tab);
+    route("properties", propertyId, tab);
+  }
+
   const [search, setSearch] = useState(""),
     [month, setMonth] = useState(localToday().slice(0, 7)),
-    [filter, setFilter] = useState("all"),
-    [showArchived, setShowArchived] = useState(false);
+    [filter, setFilter] = useState("all");
   const lastFocus = useRef<HTMLElement | null>(null),
     dialog = useRef<HTMLDivElement>(null);
   const refresh = useCallback(async () => {
@@ -259,12 +402,40 @@ export default function Workspace() {
     };
   }, [panel, busy]);
   function go(v: View) {
+    if (!canLeave()) return;
+    setPropertyId("");
+    setCreatingProperty(false);
+    route(v);
     setView(v);
     setSearch("");
     setFilter("all");
     setMobileNav(false);
   }
   function open(p: Panel) {
+    if (p.type === "property" && !p.item) {
+      if (!canLeave()) return;
+      setView("properties");
+      setPropertyId("");
+      setCreatingProperty(true);
+      setPanel(null);
+      setMobileNav(false);
+      route("properties", "", "general", true);
+      return;
+    }
+    if (p.type === "tenant" && !p.item) {
+      if (!canLeave()) return;
+      setView("tenants");
+      setCreatingProperty(false);
+      setPropertyId("");
+      setCreatePersonRequest((v) => v + 1);
+      setPanel(null);
+      route("tenants");
+      return;
+    }
+    if (p.type === "detail" && p.item) {
+      selectProperty(p.item.id);
+      return;
+    }
     setError("");
     setPanel(p);
   }
@@ -281,6 +452,7 @@ export default function Workspace() {
       await refresh();
       setPanel(null);
       setToast(message);
+      if (path === "properties" && method === "POST") selectProperty(result.id);
       return result;
     } catch (e) {
       setError((e as Error).message);
@@ -326,11 +498,11 @@ export default function Workspace() {
     return (
       <main className="auth-page">
         <div className="auth-story">
-          <a className="brand" href="/">
+          <a className="brand" href="/" aria-label="Kevvio, inicio">
             <span className="brand-mark">
-              <Building2 size={23} />
+              <BrandMark size={23} />
             </span>
-            raíz<span className="brand-dot">.</span>
+            kevvio<span className="brand-dot">.</span>
           </a>
           <div>
             <h1>
@@ -493,7 +665,7 @@ export default function Workspace() {
   };
   const primaryLabel =
     view === "tenants"
-      ? "Nuevo arrendatario"
+      ? "Nueva persona"
       : view === "leases"
         ? "Nuevo contrato"
         : view === "documents"
@@ -509,11 +681,6 @@ export default function Workspace() {
     properties: {
       title: "Inmuebles",
       description: "Cada espacio, con toda su información a mano.",
-    },
-    inventory: {
-      title: "Fotos e inventario",
-      description:
-        "Cada espacio, cada elemento y su estado, con evidencia fotográfica.",
     },
     tenants: {
       title: "Arrendatarios",
@@ -550,12 +717,15 @@ export default function Workspace() {
           onClick={() => setMobileNav(false)}
         />
       )}
-      <aside className={"sidebar " + (mobileNav ? "is-open" : "")}>
-        <a className="brand" href="/" aria-label="Raíz, inicio">
+      <aside
+        id="primary-navigation"
+        className={"sidebar " + (mobileNav ? "is-open" : "")}
+      >
+        <a className="brand" href="/" aria-label="Kevvio, inicio">
           <span className="brand-mark">
-            <Building2 size={23} />
+            <BrandMark size={23} />
           </span>
-          raíz<span className="brand-dot">.</span>
+          kevvio<span className="brand-dot">.</span>
         </a>
         <div className="workspace-switch">
           <span className="workspace-avatar">
@@ -563,7 +733,7 @@ export default function Workspace() {
           </span>
           <div>
             <strong>Mi portafolio</strong>
-            <small>Espacio personal</small>
+            <small>Gestión inmobiliaria</small>
           </div>
           <LockKeyhole size={13} />
         </div>
@@ -590,6 +760,7 @@ export default function Workspace() {
           <button
             className="profile"
             onClick={async () => {
+              if (!canLeave()) return;
               try {
                 await api("logout", "POST", {});
                 setSession({ user: null, setupRequired: false });
@@ -618,6 +789,8 @@ export default function Workspace() {
               className="icon-button mobile-menu"
               onClick={() => setMobileNav(true)}
               aria-label="Abrir menú"
+              aria-controls="primary-navigation"
+              aria-expanded={mobileNav}
             >
               <Menu size={20} />
             </button>
@@ -625,24 +798,30 @@ export default function Workspace() {
             <ChevronRight size={13} />
             <strong>{nav.find((n) => n.id === view)?.label}</strong>
           </div>
-          <span className="top-date">
-            <CalendarDays size={15} />
-            {date(today)}
-          </span>
+          <button
+            className="global-search"
+            onClick={() => setCommandOpen(true)}
+          >
+            <Search size={16} />
+            <span>Buscar o ir a…</span>
+            <kbd>⌘ K</kbd>
+          </button>
         </header>
         <main id="main">
-          <div className="page-heading">
-            <div>
-              <h1>{titles[view].title}</h1>
-              <p>{titles[view].description}</p>
+          {view !== "properties" && view !== "tenants" && (
+            <div className="page-heading">
+              <div>
+                <h1>{titles[view].title}</h1>
+                <p>{titles[view].description}</p>
+              </div>
+              {
+                <button className="button primary" onClick={primary}>
+                  <Plus size={17} />
+                  {primaryLabel}
+                </button>
+              }
             </div>
-            {view !== "inventory" && (
-              <button className="button primary" onClick={primary}>
-                <Plus size={17} />
-                {primaryLabel}
-              </button>
-            )}
-          </div>
+          )}
           {error && !panel && (
             <div role="alert" className="error">
               <AlertCircle size={18} />
@@ -656,19 +835,54 @@ export default function Workspace() {
               </button>
             </div>
           )}
-          {view === "inventory" ? (
-            <PropertyInventory
-              key={inventoryPropertyId || data.properties[0]?.id || "empty"}
-              properties={data.properties}
-              propertyId={
-                inventoryPropertyId ||
-                data.properties.find((p) => !p.archived_at)?.id ||
-                data.properties[0]?.id ||
-                ""
-              }
-              onPropertyChange={setInventoryPropertyId}
+          {view === "properties" ? (
+            creatingProperty ? (
+              <PropertyWizard
+                onCancel={() => go("properties")}
+                onDirtyChange={setPropertyDirty}
+                onCreated={async (id) => {
+                  await refresh();
+                  setPropertyDirty(false);
+                  dirtyRef.current = false;
+                  setCreatingProperty(false);
+                  setPropertyId(id);
+                  setPropertyTab("general");
+                  route("properties", id);
+                  setToast(
+                    "Inmueble creado con sus fotos y anuncio en borrador.",
+                  );
+                }}
+              />
+            ) : propertyId &&
+              data.properties.some((p) => p.id === propertyId) ? (
+              <PropertyWorkspace
+                key={propertyId}
+                property={data.properties.find((p) => p.id === propertyId)!}
+                data={data}
+                tab={propertyTab}
+                onTab={changePropertyTab}
+                onBack={() => go("properties")}
+                onChanged={refresh}
+                onAction={open}
+                onDirtyChange={setPropertyDirty}
+              />
+            ) : (
+              <PropertyBoard
+                data={data}
+                onOpen={selectProperty}
+                onCreate={() => open({ type: "property" })}
+              />
+            )
+          ) : view === "tenants" ? (
+            <PeopleWorkspace
+              data={data}
               onChanged={refresh}
-              onCreateProperty={() => open({ type: "property" })}
+              onProperty={selectProperty}
+              onLease={(tenantId, propertyId) => {
+                if (canLeave()) open({ type: "lease", tenantId, propertyId });
+              }}
+              onDirtyChange={setPropertyDirty}
+              createRequest={createPersonRequest}
             />
           ) : view === "overview" ? (
             <>
@@ -955,11 +1169,9 @@ export default function Workspace() {
                   <Search size={17} />
                   <input
                     placeholder={
-                      view === "properties"
-                        ? "Buscar por nombre, ciudad o dirección…"
-                        : "Buscar en " +
-                          nav.find((n) => n.id === view)?.label.toLowerCase() +
-                          "…"
+                      "Buscar en " +
+                      nav.find((n) => n.id === view)?.label.toLowerCase() +
+                      "…"
                     }
                     aria-label="Buscar"
                     value={search}
@@ -1010,16 +1222,6 @@ export default function Workspace() {
                       </a>
                     </>
                   )}
-                  {view === "properties" && (
-                    <label className="checkbox">
-                      <input
-                        type="checkbox"
-                        checked={showArchived}
-                        onChange={(e) => setShowArchived(e.target.checked)}
-                      />
-                      Ver archivados
-                    </label>
-                  )}
                   {view === "documents" && (
                     <select
                       aria-label="Filtrar categoría"
@@ -1048,168 +1250,6 @@ export default function Workspace() {
                   )}
                 </div>
               </div>
-              {view === "properties" &&
-                (() => {
-                  const items = data.properties.filter(
-                    (p) =>
-                      (showArchived || !p.archived_at) &&
-                      matches(p.name, p.address, p.city),
-                  );
-                  return items.length ? (
-                    <div className="property-grid">
-                      {items.map((p) => (
-                        <button
-                          className="property-card"
-                          key={p.id}
-                          onClick={() => open({ type: "detail", item: p })}
-                        >
-                          {p.cover_photo_id && (
-                            <img
-                              className="property-cover"
-                              src={
-                                "/api/photos/" + p.cover_photo_id + "/thumbnail"
-                              }
-                              alt={"Vista de " + p.name}
-                              loading="lazy"
-                            />
-                          )}
-                          <div className="property-card-top">
-                            <span className="property-type">
-                              <Building2 size={19} />
-                              {p.kind}
-                            </span>
-                            <Badge
-                              tone={
-                                p.archived_at
-                                  ? "neutral"
-                                  : occupied.has(p.id)
-                                    ? "green"
-                                    : "blue"
-                              }
-                            >
-                              {p.archived_at
-                                ? "Archivado"
-                                : occupied.has(p.id)
-                                  ? "Arrendado"
-                                  : "Disponible"}
-                            </Badge>
-                          </div>
-                          <h2>{p.name}</h2>
-                          <p>
-                            <MapPin size={14} />
-                            {p.city} · {p.address}
-                          </p>
-                          <div className="property-features">
-                            <span>
-                              {Number(p.area).toLocaleString("es-CO")} m²
-                            </span>
-                            <span>{p.bedrooms} hab.</span>
-                            <span>{p.bathrooms} baños</span>
-                          </div>
-                          <div className="property-card-bottom">
-                            <span>
-                              {activeLeases.find((l) => l.property_id === p.id)
-                                ?.tenant_name || "Sin arrendatario vigente"}
-                            </span>
-                            <ArrowUpRight size={17} />
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="section-box">
-                      <Empty
-                        icon={Building2}
-                        title={
-                          search
-                            ? "No encontramos ese inmueble"
-                            : "Tu primer inmueble empieza aquí"
-                        }
-                        description={
-                          search
-                            ? "Prueba con otro nombre, dirección o ciudad."
-                            : "Registra los espacios que quieres administrar."
-                        }
-                        action={
-                          !search ? (
-                            <button
-                              className="button primary"
-                              onClick={() => open({ type: "property" })}
-                            >
-                              <Plus size={16} />
-                              Agregar inmueble
-                            </button>
-                          ) : undefined
-                        }
-                      />
-                    </div>
-                  );
-                })()}
-              {view === "tenants" && (
-                <DataTable
-                  headers={[
-                    "Arrendatario",
-                    "Identificación",
-                    "Contacto",
-                    "Contratos",
-                    "",
-                  ]}
-                  empty={
-                    <Empty
-                      icon={UsersRound}
-                      title={
-                        search
-                          ? "Sin coincidencias"
-                          : "Aún no hay arrendatarios"
-                      }
-                      description="Registra los datos de contacto de quienes arriendan tus inmuebles."
-                      action={
-                        <button
-                          className="button"
-                          onClick={() => open({ type: "tenant" })}
-                        >
-                          <Plus size={16} />
-                          Nuevo arrendatario
-                        </button>
-                      }
-                    />
-                  }
-                  rows={data.tenants
-                    .filter((t) =>
-                      matches(t.name, t.document, t.email, t.phone),
-                    )
-                    .map((t) => (
-                      <tr key={t.id}>
-                        <td>
-                          <div className="person">
-                            <span>{t.name.slice(0, 1)}</span>
-                            <strong>{t.name}</strong>
-                          </div>
-                        </td>
-                        <td>{t.document}</td>
-                        <td>
-                          {t.email || "Sin correo"}
-                          <small>{t.phone || "Sin teléfono"}</small>
-                        </td>
-                        <td>
-                          {
-                            data.leases.filter((l) => l.tenant_id === t.id)
-                              .length
-                          }
-                        </td>
-                        <td>
-                          <button
-                            className="icon-button"
-                            aria-label={"Editar " + t.name}
-                            onClick={() => open({ type: "tenant", item: t })}
-                          >
-                            <Pencil size={16} />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                />
-              )}
               {view === "leases" && (
                 <DataTable
                   headers={[
@@ -1535,7 +1575,7 @@ export default function Workspace() {
             </>
           )}
           <footer className="page-footer">
-            <span>Raíz · Tu patrimonio, en orden.</span>
+            <span>Kevvio · Más negocio. Menos pendientes.</span>
             <span>Valores en pesos colombianos (COP)</span>
           </footer>
         </main>
@@ -1568,7 +1608,7 @@ export default function Workspace() {
                         : "Nuevo inmueble",
                       tenant: panel.item
                         ? "Editar arrendatario"
-                        : "Nuevo arrendatario",
+                        : "Nueva persona",
                       lease: "Nuevo contrato",
                       payment: "Registrar pago",
                       document: "Subir documento",
@@ -1611,15 +1651,18 @@ export default function Workspace() {
               mutate={mutate}
               open={open}
               money={money}
-              onInventory={(id) => {
-                setPanel(null);
-                setInventoryPropertyId(id);
-                go("inventory");
-              }}
             />
           </div>
         </div>
       )}
+      <CommandMenu
+        open={commandOpen}
+        onClose={() => setCommandOpen(false)}
+        properties={data.properties}
+        sections={nav}
+        onProperty={selectProperty}
+        onSection={(id) => go(id as View)}
+      />
       {toast && (
         <div className="toast" role="status">
           <CheckCircle2 size={19} />
@@ -1662,7 +1705,6 @@ function DataTable({
   );
 }
 type PanelProps = {
-  onInventory: (id: string) => void;
   panel: Panel;
   data: Snapshot;
   busy: boolean;
@@ -1675,14 +1717,7 @@ type PanelProps = {
   open: (p: Panel) => void;
   money: (v: string | number) => string;
 };
-function PanelContent({
-  panel,
-  data,
-  busy,
-  mutate,
-  open,
-  onInventory,
-}: PanelProps) {
+function PanelContent({ panel, data, busy, mutate, open }: PanelProps) {
   const p = panel.item as Property | undefined,
     t = panel.item as Tenant | undefined,
     l = panel.item as Lease | undefined,
@@ -1844,7 +1879,7 @@ function PanelContent({
               name="document"
               required
               maxLength={200}
-              defaultValue={t?.document}
+              defaultValue={t?.document || ""}
             />
           </Field>
           <Field label="Correo electrónico">
@@ -1919,7 +1954,11 @@ function PanelContent({
             </select>
           </Field>
           <Field label="Arrendatario *" wide>
-            <select name="tenant_id" required defaultValue="">
+            <select
+              name="tenant_id"
+              required
+              defaultValue={panel.tenantId || ""}
+            >
               <option value="" disabled>
                 Selecciona un arrendatario
               </option>
@@ -2192,137 +2231,6 @@ function PanelContent({
         {footer("Guardar documento")}
       </form>
     );
-  if (panel.type === "detail" && p) {
-    const contracts = data.leases.filter((l) => l.property_id === p.id),
-      docs = data.documents.filter((d) => d.property_id === p.id);
-    return (
-      <div className="detail-content">
-        {p.cover_photo_id && (
-          <img
-            className="detail-cover"
-            src={"/api/photos/" + p.cover_photo_id + "/file"}
-            alt={"Vista de " + p.name}
-          />
-        )}
-        <button
-          className="inventory-dossier-link"
-          onClick={() => onInventory(p.id)}
-        >
-          <span>
-            <Camera size={20} />
-            <strong>Fotos e inventario</strong>
-          </span>
-          <span>
-            Ver espacios y elementos
-            <ChevronRight size={16} />
-          </span>
-        </button>
-        <div className="detail-tools">
-          <Badge tone={p.archived_at ? "neutral" : "green"}>
-            {p.kind}
-            {p.archived_at ? " · Archivado" : ""}
-          </Badge>
-          <button
-            className="button"
-            onClick={() => open({ type: "property", item: p })}
-          >
-            <Pencil size={15} />
-            Editar
-          </button>
-        </div>
-        <p className="detail-address">
-          <MapPin size={17} />
-          {p.address}, {p.city}
-        </p>
-        <div className="detail-stats">
-          <span>
-            <strong>{Number(p.area)} m²</strong>Área
-          </span>
-          <span>
-            <strong>{p.bedrooms}</strong>Habitaciones
-          </span>
-          <span>
-            <strong>{p.bathrooms}</strong>Baños
-          </span>
-        </div>
-        <dl>
-          <dt>Valor de adquisición</dt>
-          <dd>{money(p.purchase_value)}</dd>
-        </dl>
-        {p.notes && <p className="notes">{p.notes}</p>}
-        <div className="section-line">
-          <h3>Contratos</h3>
-          {!p.archived_at && (
-            <button
-              className="text-button"
-              onClick={() => open({ type: "lease", propertyId: p.id })}
-            >
-              <Plus size={15} />
-              Agregar
-            </button>
-          )}
-        </div>
-        {contracts.length ? (
-          contracts.map((l) => (
-            <div className="detail-row" key={l.id}>
-              <FileText size={19} />
-              <div>
-                <strong>{l.tenant_name}</strong>
-                <small>
-                  {date(l.start_date)} — {date(l.end_date)}
-                </small>
-              </div>
-              <span>
-                {money(l.rent)}
-                <small>+ {money(l.administration)} adm.</small>
-              </span>
-            </div>
-          ))
-        ) : (
-          <p className="muted">Aún no hay contratos para este inmueble.</p>
-        )}
-        <div className="section-line">
-          <h3>Documentos</h3>
-          {!p.archived_at && (
-            <button
-              className="text-button"
-              onClick={() => open({ type: "document", propertyId: p.id })}
-            >
-              <Plus size={15} />
-              Subir
-            </button>
-          )}
-        </div>
-        {docs.length ? (
-          docs.map((d) => (
-            <a
-              className="detail-row"
-              href={"/api/documents/" + d.id}
-              key={d.id}
-            >
-              <FileText size={19} />
-              <div>
-                <strong>{d.title}</strong>
-                <small>{d.category}</small>
-              </div>
-              <Download size={17} />
-            </a>
-          ))
-        ) : (
-          <p className="muted">Todavía no se han adjuntado documentos.</p>
-        )}
-        {!p.archived_at && (
-          <button
-            className="text-button archive-action"
-            onClick={() => open({ type: "archive", item: p })}
-          >
-            <Archive size={16} />
-            Archivar inmueble
-          </button>
-        )}
-      </div>
-    );
-  }
   if (panel.type === "end" && l)
     return (
       <form

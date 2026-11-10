@@ -1,0 +1,65 @@
+{
+  "duration": 27.541,
+  "scenes": [
+    {
+      "title": "Tu negocio crece. El caos también.",
+      "chapter": "El ruido",
+      "text": "Chats. Fotos. Pendientes. Tu negocio crece. El caos también.",
+      "start": 0,
+      "end": 4.603,
+      "duration": 4.603,
+      "speech_start": 0.18,
+      "speech_end": 4.253
+    },
+    {
+      "title": "Tu memoria tiene un límite.",
+      "chapter": "La carga",
+      "text": "¿A quién ibas a llamar? ¿Ese pago llegó? Tu memoria tiene un límite.",
+      "start": 4.603,
+      "end": 9.214,
+      "duration": 4.611,
+      "speech_start": 4.783,
+      "speech_end": 8.864
+    },
+    {
+      "title": "Dale un lugar a todo.",
+      "chapter": "Todo conecta",
+      "text": "Conecta inmuebles, personas y pagos. Todo, en un solo lugar.",
+      "start": 9.214,
+      "end": 13.65,
+      "duration": 4.436,
+      "speech_start": 9.394,
+      "speech_end": 13.3
+    },
+    {
+      "title": "Presenta. Conecta. Da seguimiento.",
+      "chapter": "Tu alcance",
+      "text": "Presenta mejor tus inmuebles. Da seguimiento a cada oportunidad.",
+      "start": 13.65,
+      "end": 18.207,
+      "duration": 4.557,
+      "speech_start": 13.83,
+      "speech_end": 17.857
+    },
+    {
+      "title": "Tu operación, bajo control.",
+      "chapter": "Tu control",
+      "text": "Contratos, cobros e inventario. Tu operación, bajo control.",
+      "start": 18.207,
+      "end": 22.589,
+      "duration": 4.382,
+      "speech_start": 18.387,
+      "speech_end": 22.239
+    },
+    {
+      "title": "Más espacio para conectar.",
+      "chapter": "Más espacio",
+      "text": "Menos pendientes en la cabeza. Más espacio para tu próxima conexión.",
+      "start": 22.589,
+      "end": 27.541,
+      "duration": 4.952,
+      "speech_start": 22.769,
+      "speech_end": 27.191
+    }
+  ]
+}

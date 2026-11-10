@@ -87,7 +87,9 @@ export default function PropertyInventory({
   onPropertyChange,
   onChanged,
   onCreateProperty,
+  embedded = false,
 }: {
+  embedded?: boolean;
   properties: Property[];
   propertyId: string;
   onPropertyChange: (id: string) => void;
@@ -246,28 +248,30 @@ export default function PropertyInventory({
   return (
     <div className="inventory-page">
       <div className="inventory-property-bar">
-        <Field label="Inmueble">
-          <select
-            aria-label="Inmueble del inventario"
-            value={propertyId}
-            disabled={busy}
-            onChange={(e) => {
-              setSpace("all");
-              setSearch("");
-              setCondition("all");
-              setCategory("all");
-              setArchived(false);
-              onPropertyChange(e.target.value);
-            }}
-          >
-            {properties.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-                {p.archived_at ? " · Archivado" : ""}
-              </option>
-            ))}
-          </select>
-        </Field>
+        {!embedded && (
+          <Field label="Inmueble">
+            <select
+              aria-label="Inmueble del inventario"
+              value={propertyId}
+              disabled={busy}
+              onChange={(e) => {
+                setSpace("all");
+                setSearch("");
+                setCondition("all");
+                setCategory("all");
+                setArchived(false);
+                onPropertyChange(e.target.value);
+              }}
+            >
+              {properties.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                  {p.archived_at ? " · Archivado" : ""}
+                </option>
+              ))}
+            </select>
+          </Field>
+        )}
         <a className="button" href={"/api/inventory/" + propertyId + "/export"}>
           <Download size={16} />
           Exportar inventario
@@ -299,12 +303,14 @@ export default function PropertyInventory({
                 conservan para consulta.
               </p>
             )}
-            <PhotoGallery
-              propertyId={propertyId}
-              photos={data.photos}
-              readonly={readonly}
-              onChanged={reload}
-            />
+            {!embedded && (
+              <PhotoGallery
+                propertyId={propertyId}
+                photos={data.photos}
+                readonly={readonly}
+                onChanged={reload}
+              />
+            )}
             <div className="inventory-section-heading">
               <div>
                 <h2>Inventario completo</h2>

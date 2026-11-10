@@ -1,3 +1,4 @@
+import { runGrowthCases } from "./growth-cases.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import pg from "pg";
@@ -10,7 +11,7 @@ import sharp from "sharp";
 
 test(
   "Flujo completo con PostgreSQL aislado, integridad y persistencia",
-  { timeout: 120000 },
+  { timeout: 180000 },
   async (t) => {
     const dbName = "raiz_test_" + randomUUID().replaceAll("-", "");
     const root = new pg.Client({ connectionString: process.env.DATABASE_URL });
@@ -21,7 +22,7 @@ test(
       cookie = "",
       logs = "";
     const origin = "http://127.0.0.1:3046";
-    async function start() {
+    async function start(overrides = {}) {
       server = spawn(
         process.execPath,
         [
@@ -35,6 +36,10 @@ test(
         {
           env: {
             ...process.env,
+            OPENAI_API_KEY: "",
+            KIE_API_KEY: "",
+            VIDEO_TEST_MODE: "",
+            ...overrides,
             DATABASE_URL: url.toString(),
             UPLOAD_DIR: resolve(".data/test-uploads", dbName),
           },
@@ -858,6 +863,451 @@ test(
           );
         },
       );
+
+      let listingProperty, listingPhotos, privatePhoto, listingState;
+      let listingDraft;
+      await t.test(
+        "Anuncios: borrador privado y validación antes de publicar",
+        async () => {
+          listingProperty = await create("properties", {
+            name: "Inmueble para anuncio",
+            kind: "Apartamento",
+            city: "Bogotá",
+            address: "Dirección exacta PRIVADA",
+            area: 72,
+            bedrooms: 2,
+            bathrooms: 2,
+            purchase_value: 999999,
+            notes: "NOTA INTERNA SECRETA",
+          });
+          listingPhotos = (
+            await create(
+              "photos",
+              photoForm(listingProperty.id, null, [imageBytes, imageBytes]),
+            )
+          ).photos;
+          const item = await create("inventory-items", {
+            property_id: listingProperty.id,
+            name: "Elemento privado",
+          });
+          privatePhoto = (
+            await create("photos", photoForm(listingProperty.id, item.id))
+          ).photos[0];
+          listingDraft = {
+            title: "Apartamento luminoso",
+            description: "Descripción pública <script>alert(1)</script>",
+            monthly_rent: 2400000,
+            administration: 300000,
+            neighborhood: "Cedritos",
+            contact_name: "Gestor de prueba",
+            contact_phone: "+573001234567",
+            contact_email: "gestor@example.com",
+            amenities: ["Balcón", "Ascensor"],
+            photo_ids: [listingPhotos[0].id],
+            show_address: false,
+            available_from: "2030-01-01",
+            expires_on: null,
+          };
+          assert.equal(
+            (
+              await request(
+                "listings/" + listingProperty.id,
+                "GET",
+                undefined,
+                false,
+              )
+            ).status,
+            401,
+          );
+          assert.equal(
+            (
+              await request(
+                "listings/" + listingProperty.id + "/publish",
+                "POST",
+                listingDraft,
+                false,
+              )
+            ).status,
+            401,
+          );
+          const initial = await request("listings/" + listingProperty.id);
+          assert.equal(initial.data.url, "");
+          for (const invalid of [
+            { monthly_rent: 0 },
+            { photo_ids: [] },
+            { contact_phone: "", contact_email: "" },
+            { photo_ids: [privatePhoto.id] },
+            { photo_ids: [generalPhotos[0].id] },
+            { expires_on: "2000-01-01" },
+          ]) {
+            assert.equal(
+              (
+                await request(
+                  "listings/" + listingProperty.id + "/publish",
+                  "POST",
+                  { ...listingDraft, ...invalid },
+                )
+              ).status,
+              400,
+            );
+          }
+          listingState = await create(
+            "listings/" + listingProperty.id + "/draft",
+            listingDraft,
+          );
+          assert.equal(listingState.enabled, false);
+          assert.equal(listingState.local_only, true);
+          assert.match(listingState.path, /^\/p\/[A-Za-z0-9_-]{43}$/);
+          assert.equal(
+            (
+              await request(
+                "public/" + listingState.path.split("/").at(-1),
+                "GET",
+                undefined,
+                false,
+              )
+            ).status,
+            404,
+          );
+        },
+      );
+      await t.test(
+        "Anuncios: página pública y fotos seleccionadas sin exponer gestión privada",
+        async () => {
+          listingState = await create(
+            "listings/" + listingProperty.id + "/publish",
+            listingDraft,
+          );
+          assert.equal(listingState.has_unpublished_changes, false);
+          const key = listingState.path.split("/").at(-1);
+          const pub = await request("public/" + key, "GET", undefined, false);
+          assert.equal(pub.status, 200);
+          assert.equal(pub.data.address, null);
+          assert.equal(pub.data.title, listingDraft.title);
+          assert.deepEqual(
+            pub.data.photos.map((p) => p.id),
+            [listingPhotos[0].id],
+          );
+          for (const secret of [
+            "purchase_value",
+            "notes",
+            "property_id",
+            "storage_key",
+            "inventory_item_id",
+            "original_filename",
+            "NOTA INTERNA SECRETA",
+            "Dirección exacta PRIVADA",
+          ])
+            assert.ok(!JSON.stringify(pub.data).includes(secret), secret);
+          const allowed = await fetch(
+            origin +
+              "/api/public/" +
+              key +
+              "/photos/" +
+              listingPhotos[0].id +
+              "/file",
+          );
+          assert.equal(allowed.status, 200);
+          assert.equal(allowed.headers.get("content-type"), "image/webp");
+          assert.match(allowed.headers.get("cache-control"), /no-store/);
+          assert.equal(
+            (
+              await fetch(
+                origin +
+                  "/api/public/" +
+                  key +
+                  "/photos/" +
+                  listingPhotos[0].id +
+                  "/thumbnail",
+              )
+            ).status,
+            200,
+          );
+          for (const id of [
+            listingPhotos[1].id,
+            privatePhoto.id,
+            generalPhotos[0].id,
+            randomUUID(),
+            "bad",
+          ]) {
+            assert.equal(
+              (
+                await fetch(
+                  origin + "/api/public/" + key + "/photos/" + id + "/file",
+                )
+              ).status,
+              404,
+            );
+          }
+          assert.equal(
+            (
+              await fetch(
+                origin + "/api/photos/" + listingPhotos[0].id + "/file",
+              )
+            ).status,
+            401,
+          );
+          const page = await fetch(origin + listingState.path);
+          assert.equal(page.status, 200);
+          assert.match(page.headers.get("cache-control"), /no-store/);
+          const html = await page.text();
+          assert.match(html, /Apartamento luminoso/);
+          assert.match(html, /noindex/);
+          assert.ok(!html.includes("<script>alert(1)</script>"));
+          assert.ok(!html.includes("NOTA INTERNA SECRETA"));
+          assert.ok(
+            (await request("snapshot")).data.properties.find(
+              (p) => p.id === listingProperty.id,
+            ).listing_enabled,
+          );
+        },
+      );
+      await t.test(
+        "Anuncios: cambios en borrador no alteran la versión publicada",
+        async () => {
+          const key = listingState.path.split("/").at(-1);
+          listingDraft = {
+            ...listingDraft,
+            title: "Título actualizado",
+            show_address: true,
+            photo_ids: [listingPhotos[1].id, listingPhotos[0].id],
+            expires_on: "2200-01-01",
+          };
+          const draft = await create(
+            "listings/" + listingProperty.id + "/draft",
+            listingDraft,
+          );
+          assert.equal(draft.has_unpublished_changes, true);
+          assert.equal(draft.url, listingState.url);
+          const before = (
+            await request("public/" + key, "GET", undefined, false)
+          ).data;
+          assert.equal(before.title, "Apartamento luminoso");
+          assert.equal(before.address, null);
+          assert.equal(before.photos.length, 1);
+          listingState = await create(
+            "listings/" + listingProperty.id + "/publish",
+            listingDraft,
+          );
+          assert.equal(listingState.has_unpublished_changes, false);
+          const after = (
+            await request("public/" + key, "GET", undefined, false)
+          ).data;
+          assert.equal(after.title, listingDraft.title);
+          assert.equal(after.address, listingProperty.address);
+          assert.deepEqual(
+            after.photos.map((p) => p.id),
+            listingDraft.photo_ids,
+          );
+        },
+      );
+      await t.test(
+        "Anuncios: reemplazar y desactivar revoca página, datos y fotos",
+        async () => {
+          const oldKey = listingState.path.split("/").at(-1),
+            oldPath = listingState.path;
+          listingState = await create(
+            "listings/" + listingProperty.id + "/rotate",
+            {},
+          );
+          assert.notEqual(listingState.path, oldPath);
+          assert.equal(
+            (await request("public/" + oldKey, "GET", undefined, false)).status,
+            404,
+          );
+          assert.equal((await fetch(origin + oldPath)).status, 404);
+          assert.equal(
+            (
+              await fetch(
+                origin +
+                  "/api/public/" +
+                  oldKey +
+                  "/photos/" +
+                  listingPhotos[0].id +
+                  "/file",
+              )
+            ).status,
+            404,
+          );
+          const key = listingState.path.split("/").at(-1);
+          assert.equal(
+            (await request("public/" + key, "GET", undefined, false)).status,
+            200,
+          );
+          await create("listings/" + listingProperty.id + "/disable", {});
+          assert.equal(
+            (await request("public/" + key, "GET", undefined, false)).status,
+            404,
+          );
+          assert.equal((await fetch(origin + listingState.path)).status, 404);
+          assert.equal(
+            (
+              await fetch(
+                origin +
+                  "/api/public/" +
+                  key +
+                  "/photos/" +
+                  listingPhotos[0].id +
+                  "/file",
+              )
+            ).status,
+            404,
+          );
+          listingState = await create(
+            "listings/" + listingProperty.id + "/publish",
+            listingDraft,
+          );
+          assert.equal(
+            (await request("public/" + key, "GET", undefined, false)).status,
+            200,
+          );
+        },
+      );
+      await t.test(
+        "Anuncios: archivar una foto retira su acceso público inmediatamente",
+        async () => {
+          const key = listingState.path.split("/").at(-1);
+          assert.equal(
+            (
+              await request("photos/" + listingPhotos[0].id, "PATCH", {
+                archived: true,
+              })
+            ).status,
+            200,
+          );
+          const pub = (await request("public/" + key, "GET", undefined, false))
+            .data;
+          assert.deepEqual(
+            pub.photos.map((p) => p.id),
+            [listingPhotos[1].id],
+          );
+          assert.equal(
+            (
+              await fetch(
+                origin +
+                  "/api/public/" +
+                  key +
+                  "/photos/" +
+                  listingPhotos[0].id +
+                  "/file",
+              )
+            ).status,
+            404,
+          );
+          assert.equal(
+            (
+              await request(
+                "listings/" + listingProperty.id + "/publish",
+                "POST",
+                listingDraft,
+              )
+            ).status,
+            400,
+          );
+          listingDraft = { ...listingDraft, photo_ids: [listingPhotos[1].id] };
+          listingState = await create(
+            "listings/" + listingProperty.id + "/publish",
+            listingDraft,
+          );
+        },
+      );
+      await t.test(
+        "Anuncios: vencimiento y persistencia tras reiniciar",
+        async () => {
+          const key = listingState.path.split("/").at(-1),
+            testDb = new pg.Client({ connectionString: url.toString() });
+          await testDb.connect();
+          try {
+            await testDb.query(
+              "UPDATE property_listings SET expires_on='2000-01-01' WHERE property_id=$1",
+              [listingProperty.id],
+            );
+          } finally {
+            await testDb.end();
+          }
+          assert.equal(
+            (await request("public/" + key, "GET", undefined, false)).status,
+            404,
+          );
+          assert.equal((await fetch(origin + listingState.path)).status, 404);
+          assert.equal(
+            (await request("snapshot")).data.properties.find(
+              (p) => p.id === listingProperty.id,
+            ).listing_enabled,
+            false,
+          );
+          listingState = await create(
+            "listings/" + listingProperty.id + "/publish",
+            listingDraft,
+          );
+          await stop();
+          await start();
+          assert.equal(
+            (await request("public/" + key, "GET", undefined, false)).status,
+            200,
+          );
+          assert.equal(
+            (await request("listings/" + listingProperty.id)).data.path,
+            listingState.path,
+          );
+        },
+      );
+      await t.test(
+        "Anuncios: archivar el inmueble revoca todo el anuncio",
+        async () => {
+          const key = listingState.path.split("/").at(-1);
+          assert.equal(
+            (await request("properties/" + listingProperty.id, "DELETE"))
+              .status,
+            200,
+          );
+          assert.equal(
+            (await request("public/" + key, "GET", undefined, false)).status,
+            404,
+          );
+          assert.equal((await fetch(origin + listingState.path)).status, 404);
+          assert.equal(
+            (
+              await fetch(
+                origin +
+                  "/api/public/" +
+                  key +
+                  "/photos/" +
+                  listingPhotos[1].id +
+                  "/file",
+              )
+            ).status,
+            404,
+          );
+          assert.equal(
+            (
+              await request(
+                "listings/" + listingProperty.id + "/publish",
+                "POST",
+                listingDraft,
+              )
+            ).status,
+            409,
+          );
+          assert.equal(
+            (await create("listings/" + listingProperty.id + "/disable", {}))
+              .enabled,
+            false,
+          );
+        },
+      );
+      await runGrowthCases({
+        t,
+        request,
+        create,
+        start,
+        stop,
+        origin,
+        cookie,
+        url,
+        imageBytes,
+        today,
+      });
     } finally {
       await stop();
       await root.query(`DROP DATABASE IF EXISTS "${dbName}" WITH (FORCE)`);

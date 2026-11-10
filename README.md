@@ -1,6 +1,10 @@
-# Raíz · Gestión de inmuebles
+# Kevvio · Gestión de inmuebles
 
-Aplicación fullstack de uso personal: Next.js 16, React 19 y PostgreSQL 17 en Docker. El portafolio inicia vacío. Base y aplicación escuchan únicamente en `127.0.0.1`.
+**Más negocio. Menos pendientes.** Marca aprobada por el propietario: Kevvio (`kevvio` en el logotipo). La aplicación, la landing, los anuncios, los títulos del navegador y el video usan esta identidad. El dominio aún no está conectado.
+
+Los identificadores internos `raiz-activos`, `raiz`, `raiz_session` y `RAIZ_PLAN` se conservan por compatibilidad con el volumen PostgreSQL existente, las sesiones y la configuración local. No son nombres visibles de producto; no hace falta migrar datos para cambiar la marca.
+
+Aplicación fullstack para la gestión de arriendos, con acceso individual en esta versión: Next.js 16, React 19 y PostgreSQL 17 en Docker. El portafolio inicia vacío. Base y aplicación escuchan únicamente en `127.0.0.1`.
 
 ## Puesta en marcha
 
@@ -22,6 +26,9 @@ En este equipo ya se generó `.env` con credenciales aleatorias y se aplicaron l
 
 ## Funcionalidades
 
+- Portafolio visual con búsqueda, filtros de disponibilidad y vistas de tarjetas/lista. Búsqueda global con Cmd/Ctrl+K.
+- Configurar cada inmueble en su propio espacio con pestañas de configuración, fotos, inventario y anuncio público.
+- Anuncios mediante enlace: fotos seleccionadas, descripción, canon, administración, contacto, vista previa, borradores, publicación, vencimiento, desactivación y reemplazo de enlace.
 - Crear, editar y archivar inmuebles; consultar su expediente.
 - Galería de fotos del inmueble con portada, descripciones, descarga y archivo/restauración; fotos propias de cada elemento del inventario.
 - Inventario por espacios (habitaciones, baños, cocina, exteriores o cualquier espacio propio), con categorías y unidades personalizables. Cantidad, estado, marca, modelo, serial, material, color, dimensiones, valor unitario, propietario, fecha de revisión, notas y campos adicionales.
@@ -42,15 +49,16 @@ En este equipo ya se generó `.env` con credenciales aleatorias y se aplicaron l
 - Volumen: `raiz-activos_postgres_data`.
 - Esquema inicial: `migrations/001_initial.sql`.
 - Fotos e inventario: `migrations/002_property_inventory_photos.sql`.
-- Tablas: `users`, `sessions`, `properties`, `tenants`, `leases`, `charges`, `payments`, `documents`, `property_spaces`, `inventory_items`, `inventory_history`, `property_photos` y `schema_migrations`.
+- Anuncios públicos: `migrations/003_public_listings.sql`.
+- Tablas: `users`, `sessions`, `properties`, `tenants`, `leases`, `charges`, `payments`, `documents`, `property_spaces`, `inventory_items`, `inventory_history`, `property_photos`, `property_listings` y `schema_migrations`.
 
-El ejecutor toma un bloqueo de PostgreSQL, verifica SHA-256 de migraciones ya aplicadas y ejecuta cada archivo nuevo en una transacción. Se puede ejecutar repetidamente sin duplicar datos. Para cambios futuros, agregar `003_descripcion.sql`, sin modificar migraciones aplicadas, y ejecutar `npm run db:migrate`.
+El ejecutor toma un bloqueo de PostgreSQL, verifica SHA-256 de migraciones ya aplicadas y ejecuta cada archivo nuevo en una transacción. Se puede ejecutar repetidamente sin duplicar datos. Para cambios futuros, agregar `004_descripcion.sql`, sin modificar migraciones aplicadas, y ejecutar `npm run db:migrate`.
 
 ## Fotos e inventario
 
-Abrir **Fotos e inventario** en el menú y elegir un inmueble, o entrar desde su expediente. Crear los espacios y agregar elementos individualmente o con **Agregar varios**. El catálogo es una ayuda inicial: los nombres, categorías, unidades y detalles adicionales son libres. Para registrar diferencias de estado o serial, usar fichas separadas; para elementos iguales, registrar la cantidad.
+Abrir **Inmuebles**, entrar al inmueble y elegir **Fotos** o **Inventario** en sus pestañas. Crear los espacios y agregar elementos individualmente o con **Agregar varios**. El catálogo es una ayuda inicial: los nombres, categorías, unidades y detalles adicionales son libres. Para registrar diferencias de estado o serial, usar fichas separadas; para elementos iguales, registrar la cantidad.
 
-Se aceptan JPG, PNG y WebP estáticos: hasta 10 MB y 40 megapíxeles por imagen, 12 fotos y 50 MB por carga. Se valida el contenido del archivo; se corrige la orientación y se guarda una versión WebP optimizada de hasta 2400 px, junto con su miniatura. No se conserva el original ni sus metadatos EXIF. Las fotos solo se sirven con sesión iniciada.
+Se aceptan JPG, PNG y WebP estáticos: hasta 10 MB y 40 megapíxeles por imagen, 12 fotos y 50 MB por carga. Se valida el contenido del archivo; se corrige la orientación y se guarda una versión WebP optimizada de hasta 2400 px, junto con su miniatura. No se conserva el original ni sus metadatos EXIF. Las fotos privadas requieren sesión iniciada. Las fotos generales seleccionadas y publicadas en un anuncio tienen acceso anónimo únicamente mediante su enlace activo.
 
 Los elementos y fotos se archivan de forma reversible. El historial conserva los datos de cada creación, edición, archivo y restauración de un elemento; no constituye un acta firmada de entrega. Un espacio con elementos, incluso archivados, no puede eliminarse. Los inmuebles archivados permiten consultar y exportar su inventario, sin modificarlo. El CSV incluye los elementos activos y sus atributos, sin imágenes.
 
@@ -63,6 +71,10 @@ docker compose up -d --wait postgres
 ```
 
 No usar `docker compose down -v`: eliminaría el volumen de datos. Cambiar POSTGRES_PASSWORD en `.env` después de crear el volumen no modifica la contraseña del rol de PostgreSQL; cualquier rotación debe hacerse también dentro de la base.
+
+## Anuncios y hosting
+
+En **Inmuebles → Anuncio público**, prepara el borrador, selecciona fotos y publica. Copia el enlace desde la misma pantalla. La dirección exacta es opcional y la gestión privada no se publica. La app sigue siendo local: los enlaces de localhost funcionan en este Mac hasta configurar hosting. La [guía de anuncios y hosting](docs/anuncios-y-hosting.md) documenta el flujo, la arquitectura implementada, la propuesta de despliegue y la evolución a SaaS.
 
 ## Documentos y respaldos
 
@@ -102,3 +114,38 @@ Importes en pesos colombianos enteros. Fechas operativas en America/Bogota. El c
 Es una aplicación local personal, sin integración bancaria, facturación electrónica, correo automático, sincronización en la nube ni acceso multiusuario. Los documentos descargados no se firman ni se someten a OCR. Para exponerla fuera del Mac se debe configurar HTTPS, un acceso privado y respaldos externos. No hay recuperación automática de contraseña; guarda tu contraseña en un gestor.
 
 Referencias de implementación: [imagen oficial de PostgreSQL](https://hub.docker.com/_/postgres), [transacciones de node-postgres](https://node-postgres.com/features/transactions).
+
+## Landing, Personas y creación guiada
+
+La landing está en `/`; el espacio de trabajo está en `/app`. Los enlaces antiguos con `?vista=...` o `?inmueble=...` redirigen a la aplicación. Los tres planes de la landing (Esencial, Profesional y Studio) son una propuesta comercial sin precios ni cobro de suscripciones. Esta instalación sigue siendo de un solo propietario: no hay aislamiento multiempresa, registro público ni pasarela de pagos.
+
+La portada presenta un video comercial de 28 segundos inmediatamente después del hero: chats, fotos y pendientes dispersos dan paso a un trabajo conectado, mediante tipografía animada, fotografía y seis escenas. La narración sintética en español se acompaña de pulsos y transiciones originales, atenuados durante la voz; permanece sin nombre comercial mientras se elige la marca. **Ver con narración en español** activa el sonido desde el inicio; hay seis capítulos, subtítulos, transcripción y descarga MP4. La vista previa muda respeta movimiento reducido y ahorro de datos. Las escenas son ilustrativas y el video se sirve como archivo estático, sin consumo de servicios IA. Después aparecen cuatro áreas explorables: inmuebles, personas, arriendos/cobros/pagos e inventario/documentos. Fuentes y regeneración en [scripts/marketing/README.md](scripts/marketing/README.md).
+
+El montaje usa rótulos esenciales de categorías de 54px sobre el lienzo de 1280px, con contenido principal en la mitad superior y espacio inferior reservado para subtítulos y controles. Los nombres de presentación alternan a 56px y los operativos forman dos filas de dos; se retiró el texto de pie que competía con los subtítulos. La revisión final confirmó resuelta esta corrección móvil en las nuevas capturas de escritorio y móvil.
+
+**Nuevo inmueble** abre un asistente de página completa: Fotos → Datos → Descripción → Revisión. Hasta 12 fotos se validan antes de guardar, se crea la portada y se prepara un anuncio privado. El guardado es atómico y tiene una clave de reintento para evitar duplicados. Para crear descripciones desde las fotos, configura `OPENAI_API_KEY` solo en `.env`; el modelo predeterminado es `gpt-5.4-mini`, ajustable con `OPENAI_DESCRIPTION_MODEL`. Sin clave, la redacción manual sigue disponible. El texto generado se presenta como sugerencia que la persona revisa y acepta antes de aplicarla. No publica automáticamente.
+
+**Personas** amplía el registro existente de arrendatarios: contactos sin identificación obligatoria, oportunidades de compra/arriendo vinculadas a inmuebles, etapas, presupuesto, próximo contacto y actividades. La misma persona conserva sus contratos. Cerrar una oportunidad de arriendo no crea cobros automáticamente: hay que registrar el contrato. Cerrar una compra identifica a la persona como comprador; no representa una escritura ni una contabilidad de compraventa.
+
+Migración `004_people_crm_and_property_wizard.sql`: identificación opcional, oportunidades, actividades e idempotencia de creación. No elimina registros anteriores.
+
+## Studio: videos desde las fotos
+
+Dentro de cada inmueble, la pestaña **Videos** permite seleccionar y ordenar hasta seis fotos generales, elegir un modelo, ver una estimación y crear un clip por foto. Los resultados se descargan al almacenamiento privado. **Unir y preparar MP4** monta los clips listos en horizontal o vertical, conserva el encuadre con márgenes y elimina el audio. No publica videos automáticamente.
+
+Configura estas variables solo en el servidor:
+
+```dotenv
+KIE_API_KEY=
+RAIZ_PLAN=studio
+VIDEO_DAILY_BUDGET_USD=5
+FFMPEG_PATH=ffmpeg
+```
+
+`KIE_API_KEY` es una credencial distinta de OpenAI. Sin ella no se envían generaciones. `RAIZ_PLAN` controla la capacidad local de video; cuando se omite, esta instalación personal muestra Studio. Esto NO sustituye un sistema de suscripciones. El límite diario reserva estimaciones de todos los proyectos del día UTC, incluso fallidos; es un tope conservador y no un saldo facturado ni una garantía frente a cambios de precio del proveedor.
+
+FFmpeg debe estar instalado en el servidor o indicado por ruta absoluta. PostgreSQL conserva proyectos, escenas, referencias del proveedor y consumos informados. Los MP4 quedan en `UPLOAD_DIR/videos` y se incluyen en los respaldos habituales. Los clips se consultan cada 15 segundos mientras su pantalla está abierta; al volver, se puede consultar el avance. No hay un trabajador que descargue resultados mientras la aplicación está cerrada: conviene recuperarlos antes de que caduquen en el proveedor. Un envío de resultado incierto se conserva sin repetirlo automáticamente para evitar cobros duplicados.
+
+Migración `005_property_videos.sql`: proyectos y clips. Detalles de costos, integración y límites en [docs/ai-media.md](docs/ai-media.md).
+
+La última ejecución de la suite de integración pasó sus 33 pruebas con servicios IA simulados y FFmpeg real, sin usar credenciales ni saldo reales. La sustitución del video pasó compilación y comprobación de tipos. La landing con la nueva pieza se inspeccionó con Playwright autorizado por el usuario en escritorio de 1440px y móvil de 390px: sin desbordamiento horizontal, con reproducción narrada, capítulos y pestañas por teclado funcionando y el navegador de capacidades fijo bajo la cabecera; también se comprobó la reproducción explícita con movimiento reducido. La evidencia está en `.impeccable/review/landing/qa.json`. La revisión final del video concluyó «ship»: quedaron resueltas la legibilidad móvil con zonas libres para subtítulos y controles, y la documentación del relato de seis escenas, sin regresiones visibles de esas correcciones. El veredicto cubre esas dos correcciones; la revisión visual de las superficies privadas sigue pendiente.

@@ -1,0 +1,22 @@
+{
+  "createdAt": "2026-11-10",
+  "asset": "kevvio-journey.mp4",
+  "description": "Film SaaS de Kevvio, con marca en minúsculas, de problema y solución: dispersión de chats/fotos/pendientes, carga mental, trabajo conectado y más espacio para relaciones. Tipografía cinética y escenas conceptuales; no es un tutorial ni contiene datos de clientes.",
+  "soundDesign": "Pulsos tonales y transiciones sintetizados localmente por render.py, originales, sin muestras o música externa, atenuados durante la narración.",
+  "renderSource": "scripts/marketing/render.py",
+  "narrationSource": "scripts/marketing/narration.json",
+  "timeline": "journey-timeline.json",
+  "voice": {
+    "model": "Kokoro-82M",
+    "source": "https://huggingface.co/hexgrad/Kokoro-82M",
+    "license": "Apache-2.0",
+    "runtime": "kokoro-onnx 0.6.1 (MIT)",
+    "voice": "ef_dora",
+    "language": "es",
+    "speed": 1.1,
+    "inference": "local"
+  },
+  "font": { "name": "Manrope", "source": "https://github.com/google/fonts/tree/main/ofl/manrope", "license": "OFL-1.1", "licenseFile": "scripts/marketing/OFL.txt" },
+  "photo": { "file": "interior.webp", "author": "Alex Tyson", "source": "https://unsplash.com/photos/VUfe8alBlUo", "license": "Unsplash License" },
+  "output": { "width": 1280, "height": 720, "fps": 30, "durationSeconds": 27.541, "videoCodec": "H.264", "audioCodec": "AAC", "sampleRate": 48000 }
+}

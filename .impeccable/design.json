@@ -1,221 +1,809 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-08T15:48:43.414540+00:00",
-  "title": "Design System: Raíz",
+  "generatedAt": "2026-11-10T15:54:15.355869Z",
+  "title": "Design System: Kevvio",
   "extensions": {
     "colorMeta": {
-      "green": {
-        "role": "primary",
-        "displayName": "Verde profundo"
-      },
       "background": {
         "role": "neutral",
-        "displayName": "Fondo mineral"
+        "displayName": "Azul de fondo",
+        "tonalRamp": [
+          "oklch(15% 0.0115 264.51)",
+          "oklch(26% 0.0115 264.51)",
+          "oklch(38% 0.0115 264.51)",
+          "oklch(49% 0.0115 264.51)",
+          "oklch(61% 0.0115 264.51)",
+          "oklch(72% 0.0115 264.51)",
+          "oklch(84% 0.0115 264.51)",
+          "oklch(95% 0.0115 264.51)"
+        ]
       },
       "surface": {
         "role": "neutral",
-        "displayName": "Superficie blanca"
+        "displayName": "Blanco",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00)",
+          "oklch(26% 0.0000 0.00)",
+          "oklch(38% 0.0000 0.00)",
+          "oklch(49% 0.0000 0.00)",
+          "oklch(61% 0.0000 0.00)",
+          "oklch(72% 0.0000 0.00)",
+          "oklch(84% 0.0000 0.00)",
+          "oklch(95% 0.0000 0.00)"
+        ]
       },
       "ink": {
         "role": "neutral",
-        "displayName": "Tinta verdosa"
+        "displayName": "Tinta azul profunda",
+        "tonalRamp": [
+          "oklch(15% 0.0746 258.88)",
+          "oklch(26% 0.0746 258.88)",
+          "oklch(38% 0.0746 258.88)",
+          "oklch(49% 0.0746 258.88)",
+          "oklch(61% 0.0746 258.88)",
+          "oklch(72% 0.0746 258.88)",
+          "oklch(84% 0.0746 258.88)",
+          "oklch(95% 0.0746 258.88)"
+        ]
       },
-      "red": {
+      "muted": {
+        "role": "neutral",
+        "displayName": "Azul de contexto",
+        "tonalRamp": [
+          "oklch(15% 0.0603 255.57)",
+          "oklch(26% 0.0603 255.57)",
+          "oklch(38% 0.0603 255.57)",
+          "oklch(49% 0.0603 255.57)",
+          "oklch(61% 0.0603 255.57)",
+          "oklch(72% 0.0603 255.57)",
+          "oklch(84% 0.0603 255.57)",
+          "oklch(95% 0.0603 255.57)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Divisor azul",
+        "tonalRamp": [
+          "oklch(15% 0.0236 256.11)",
+          "oklch(26% 0.0236 256.11)",
+          "oklch(38% 0.0236 256.11)",
+          "oklch(49% 0.0236 256.11)",
+          "oklch(61% 0.0236 256.11)",
+          "oklch(72% 0.0236 256.11)",
+          "oklch(84% 0.0236 256.11)",
+          "oklch(95% 0.0236 256.11)"
+        ]
+      },
+      "green": {
+        "role": "primary",
+        "displayName": "Azul principal",
+        "tonalRamp": [
+          "oklch(15% 0.2044 261.43)",
+          "oklch(26% 0.2044 261.43)",
+          "oklch(38% 0.2044 261.43)",
+          "oklch(49% 0.2044 261.43)",
+          "oklch(61% 0.2044 261.43)",
+          "oklch(72% 0.2044 261.43)",
+          "oklch(84% 0.2044 261.43)",
+          "oklch(95% 0.2044 261.43)"
+        ]
+      },
+      "green-dark": {
+        "role": "primary",
+        "displayName": "Azul profundo",
+        "tonalRamp": [
+          "oklch(15% 0.1817 262.10)",
+          "oklch(26% 0.1817 262.10)",
+          "oklch(38% 0.1817 262.10)",
+          "oklch(49% 0.1817 262.10)",
+          "oklch(61% 0.1817 262.10)",
+          "oklch(72% 0.1817 262.10)",
+          "oklch(84% 0.1817 262.10)",
+          "oklch(95% 0.1817 262.10)"
+        ]
+      },
+      "green-soft": {
+        "role": "primary",
+        "displayName": "Velo azul",
+        "tonalRamp": [
+          "oklch(15% 0.0224 260.72)",
+          "oklch(26% 0.0224 260.72)",
+          "oklch(38% 0.0224 260.72)",
+          "oklch(49% 0.0224 260.72)",
+          "oklch(61% 0.0224 260.72)",
+          "oklch(72% 0.0224 260.72)",
+          "oklch(84% 0.0224 260.72)",
+          "oklch(95% 0.0224 260.72)"
+        ]
+      },
+      "focus": {
+        "role": "interaction",
+        "displayName": "Azul de foco",
+        "tonalRamp": [
+          "oklch(15% 0.2152 262.88)",
+          "oklch(26% 0.2152 262.88)",
+          "oklch(38% 0.2152 262.88)",
+          "oklch(49% 0.2152 262.88)",
+          "oklch(61% 0.2152 262.88)",
+          "oklch(72% 0.2152 262.88)",
+          "oklch(84% 0.2152 262.88)",
+          "oklch(95% 0.2152 262.88)"
+        ]
+      },
+      "control-border": {
+        "role": "neutral",
+        "displayName": "control-border",
+        "tonalRamp": [
+          "oklch(15% 0.0351 256.34)",
+          "oklch(26% 0.0351 256.34)",
+          "oklch(38% 0.0351 256.34)",
+          "oklch(49% 0.0351 256.34)",
+          "oklch(61% 0.0351 256.34)",
+          "oklch(72% 0.0351 256.34)",
+          "oklch(84% 0.0351 256.34)",
+          "oklch(95% 0.0351 256.34)"
+        ]
+      },
+      "placeholder": {
+        "role": "neutral",
+        "displayName": "placeholder",
+        "tonalRamp": [
+          "oklch(15% 0.0555 256.00)",
+          "oklch(26% 0.0555 256.00)",
+          "oklch(38% 0.0555 256.00)",
+          "oklch(49% 0.0555 256.00)",
+          "oklch(61% 0.0555 256.00)",
+          "oklch(72% 0.0555 256.00)",
+          "oklch(84% 0.0555 256.00)",
+          "oklch(95% 0.0555 256.00)"
+        ]
+      },
+      "button-hover": {
+        "role": "interaction",
+        "displayName": "button-hover",
+        "tonalRamp": [
+          "oklch(15% 0.0195 260.17)",
+          "oklch(26% 0.0195 260.17)",
+          "oklch(38% 0.0195 260.17)",
+          "oklch(49% 0.0195 260.17)",
+          "oklch(61% 0.0195 260.17)",
+          "oklch(72% 0.0195 260.17)",
+          "oklch(84% 0.0195 260.17)",
+          "oklch(95% 0.0195 260.17)"
+        ]
+      },
+      "sidebar": {
+        "role": "primary",
+        "displayName": "Marino",
+        "tonalRamp": [
+          "oklch(15% 0.0782 260.85)",
+          "oklch(26% 0.0782 260.85)",
+          "oklch(38% 0.0782 260.85)",
+          "oklch(49% 0.0782 260.85)",
+          "oklch(61% 0.0782 260.85)",
+          "oklch(72% 0.0782 260.85)",
+          "oklch(84% 0.0782 260.85)",
+          "oklch(95% 0.0782 260.85)"
+        ]
+      },
+      "nav-active-bg": {
+        "role": "interaction",
+        "displayName": "nav-active-bg",
+        "tonalRamp": [
+          "oklch(15% 0.1109 258.95)",
+          "oklch(26% 0.1109 258.95)",
+          "oklch(38% 0.1109 258.95)",
+          "oklch(49% 0.1109 258.95)",
+          "oklch(61% 0.1109 258.95)",
+          "oklch(72% 0.1109 258.95)",
+          "oklch(84% 0.1109 258.95)",
+          "oklch(95% 0.1109 258.95)"
+        ]
+      },
+      "nav-active-ink": {
+        "role": "interaction",
+        "displayName": "nav-active-ink",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00)",
+          "oklch(26% 0.0000 0.00)",
+          "oklch(38% 0.0000 0.00)",
+          "oklch(49% 0.0000 0.00)",
+          "oklch(61% 0.0000 0.00)",
+          "oklch(72% 0.0000 0.00)",
+          "oklch(84% 0.0000 0.00)",
+          "oklch(95% 0.0000 0.00)"
+        ]
+      },
+      "badge-neutral-bg": {
+        "role": "neutral",
+        "displayName": "badge-neutral-bg",
+        "tonalRamp": [
+          "oklch(15% 0.0125 255.51)",
+          "oklch(26% 0.0125 255.51)",
+          "oklch(38% 0.0125 255.51)",
+          "oklch(49% 0.0125 255.51)",
+          "oklch(61% 0.0125 255.51)",
+          "oklch(72% 0.0125 255.51)",
+          "oklch(84% 0.0125 255.51)",
+          "oklch(95% 0.0125 255.51)"
+        ]
+      },
+      "badge-neutral-ink": {
+        "role": "neutral",
+        "displayName": "badge-neutral-ink",
+        "tonalRamp": [
+          "oklch(15% 0.0520 258.70)",
+          "oklch(26% 0.0520 258.70)",
+          "oklch(38% 0.0520 258.70)",
+          "oklch(49% 0.0520 258.70)",
+          "oklch(61% 0.0520 258.70)",
+          "oklch(72% 0.0520 258.70)",
+          "oklch(84% 0.0520 258.70)",
+          "oklch(95% 0.0520 258.70)"
+        ]
+      },
+      "badge-success-bg": {
         "role": "semantic",
-        "displayName": "Vencimiento y anulación"
+        "displayName": "badge-success-bg",
+        "tonalRamp": [
+          "oklch(15% 0.0141 162.47)",
+          "oklch(26% 0.0141 162.47)",
+          "oklch(38% 0.0141 162.47)",
+          "oklch(49% 0.0141 162.47)",
+          "oklch(61% 0.0141 162.47)",
+          "oklch(72% 0.0141 162.47)",
+          "oklch(84% 0.0141 162.47)",
+          "oklch(95% 0.0141 162.47)"
+        ]
+      },
+      "badge-success-ink": {
+        "role": "semantic",
+        "displayName": "badge-success-ink",
+        "tonalRamp": [
+          "oklch(15% 0.0865 159.90)",
+          "oklch(26% 0.0865 159.90)",
+          "oklch(38% 0.0865 159.90)",
+          "oklch(49% 0.0865 159.90)",
+          "oklch(61% 0.0865 159.90)",
+          "oklch(72% 0.0865 159.90)",
+          "oklch(84% 0.0865 159.90)",
+          "oklch(95% 0.0865 159.90)"
+        ]
+      },
+      "badge-available-ink": {
+        "role": "semantic",
+        "displayName": "badge-available-ink",
+        "tonalRamp": [
+          "oklch(15% 0.1672 260.01)",
+          "oklch(26% 0.1672 260.01)",
+          "oklch(38% 0.1672 260.01)",
+          "oklch(49% 0.1672 260.01)",
+          "oklch(61% 0.1672 260.01)",
+          "oklch(72% 0.1672 260.01)",
+          "oklch(84% 0.1672 260.01)",
+          "oklch(95% 0.1672 260.01)"
+        ]
+      },
+      "badge-amber-bg": {
+        "role": "semantic",
+        "displayName": "badge-amber-bg",
+        "tonalRamp": [
+          "oklch(15% 0.0309 86.46)",
+          "oklch(26% 0.0309 86.46)",
+          "oklch(38% 0.0309 86.46)",
+          "oklch(49% 0.0309 86.46)",
+          "oklch(61% 0.0309 86.46)",
+          "oklch(72% 0.0309 86.46)",
+          "oklch(84% 0.0309 86.46)",
+          "oklch(95% 0.0309 86.46)"
+        ]
       },
       "amber": {
         "role": "semantic",
-        "displayName": "Pendiente"
+        "displayName": "amber",
+        "tonalRamp": [
+          "oklch(15% 0.1009 81.52)",
+          "oklch(26% 0.1009 81.52)",
+          "oklch(38% 0.1009 81.52)",
+          "oklch(49% 0.1009 81.52)",
+          "oklch(61% 0.1009 81.52)",
+          "oklch(72% 0.1009 81.52)",
+          "oklch(84% 0.1009 81.52)",
+          "oklch(95% 0.1009 81.52)"
+        ]
       },
-      "blue": {
+      "badge-red-bg": {
         "role": "semantic",
-        "displayName": "Disponible, próximo o parcial"
+        "displayName": "badge-red-bg",
+        "tonalRamp": [
+          "oklch(15% 0.0177 39.40)",
+          "oklch(26% 0.0177 39.40)",
+          "oklch(38% 0.0177 39.40)",
+          "oklch(49% 0.0177 39.40)",
+          "oklch(61% 0.0177 39.40)",
+          "oklch(72% 0.0177 39.40)",
+          "oklch(84% 0.0177 39.40)",
+          "oklch(95% 0.0177 39.40)"
+        ]
+      },
+      "red": {
+        "role": "semantic",
+        "displayName": "red",
+        "tonalRamp": [
+          "oklch(15% 0.1530 24.37)",
+          "oklch(26% 0.1530 24.37)",
+          "oklch(38% 0.1530 24.37)",
+          "oklch(49% 0.1530 24.37)",
+          "oklch(61% 0.1530 24.37)",
+          "oklch(72% 0.1530 24.37)",
+          "oklch(84% 0.1530 24.37)",
+          "oklch(95% 0.1530 24.37)"
+        ]
+      },
+      "error-bg": {
+        "role": "semantic",
+        "displayName": "error-bg",
+        "tonalRamp": [
+          "oklch(15% 0.0168 31.08)",
+          "oklch(26% 0.0168 31.08)",
+          "oklch(38% 0.0168 31.08)",
+          "oklch(49% 0.0168 31.08)",
+          "oklch(61% 0.0168 31.08)",
+          "oklch(72% 0.0168 31.08)",
+          "oklch(84% 0.0168 31.08)",
+          "oklch(95% 0.0168 31.08)"
+        ]
+      },
+      "error-ink": {
+        "role": "semantic",
+        "displayName": "error-ink",
+        "tonalRamp": [
+          "oklch(15% 0.1164 30.21)",
+          "oklch(26% 0.1164 30.21)",
+          "oklch(38% 0.1164 30.21)",
+          "oklch(49% 0.1164 30.21)",
+          "oklch(61% 0.1164 30.21)",
+          "oklch(72% 0.1164 30.21)",
+          "oklch(84% 0.1164 30.21)",
+          "oklch(95% 0.1164 30.21)"
+        ]
+      },
+      "accent": {
+        "displayName": "Naranja intenso",
+        "role": "secondary",
+        "tonalRamp": [
+          "oklch(15% 0.2136 40.06)",
+          "oklch(26% 0.2136 40.06)",
+          "oklch(38% 0.2136 40.06)",
+          "oklch(49% 0.2136 40.06)",
+          "oklch(61% 0.2136 40.06)",
+          "oklch(72% 0.2136 40.06)",
+          "oklch(84% 0.2136 40.06)",
+          "oklch(95% 0.2136 40.06)"
+        ]
+      },
+      "accent-hover": {
+        "displayName": "Naranja de hover",
+        "role": "secondary",
+        "tonalRamp": [
+          "oklch(15% 0.2053 40.07)",
+          "oklch(26% 0.2053 40.07)",
+          "oklch(38% 0.2053 40.07)",
+          "oklch(49% 0.2053 40.07)",
+          "oklch(61% 0.2053 40.07)",
+          "oklch(72% 0.2053 40.07)",
+          "oklch(84% 0.2053 40.07)",
+          "oklch(95% 0.2053 40.07)"
+        ]
+      },
+      "accent-ink": {
+        "displayName": "Tinta marina del acento",
+        "role": "secondary",
+        "tonalRamp": [
+          "oklch(15% 0.0657 258.17)",
+          "oklch(26% 0.0657 258.17)",
+          "oklch(38% 0.0657 258.17)",
+          "oklch(49% 0.0657 258.17)",
+          "oklch(61% 0.0657 258.17)",
+          "oklch(72% 0.0657 258.17)",
+          "oklch(84% 0.0657 258.17)",
+          "oklch(95% 0.0657 258.17)"
+        ]
+      },
+      "sidebar-ink": {
+        "displayName": "Blanco azulado",
+        "role": "primary",
+        "tonalRamp": [
+          "oklch(15% 0.0165 259.42)",
+          "oklch(26% 0.0165 259.42)",
+          "oklch(38% 0.0165 259.42)",
+          "oklch(49% 0.0165 259.42)",
+          "oklch(61% 0.0165 259.42)",
+          "oklch(72% 0.0165 259.42)",
+          "oklch(84% 0.0165 259.42)",
+          "oklch(95% 0.0165 259.42)"
+        ]
+      },
+      "nav-ink": {
+        "displayName": "Azul claro de navegación",
+        "role": "primary",
+        "tonalRamp": [
+          "oklch(15% 0.0416 256.25)",
+          "oklch(26% 0.0416 256.25)",
+          "oklch(38% 0.0416 256.25)",
+          "oklch(49% 0.0416 256.25)",
+          "oklch(61% 0.0416 256.25)",
+          "oklch(72% 0.0416 256.25)",
+          "oklch(84% 0.0416 256.25)",
+          "oklch(95% 0.0416 256.25)"
+        ]
+      },
+      "nav-hover": {
+        "displayName": "Azul de navegación en hover",
+        "role": "primary",
+        "tonalRamp": [
+          "oklch(15% 0.0875 258.48)",
+          "oklch(26% 0.0875 258.48)",
+          "oklch(38% 0.0875 258.48)",
+          "oklch(49% 0.0875 258.48)",
+          "oklch(61% 0.0875 258.48)",
+          "oklch(72% 0.0875 258.48)",
+          "oklch(84% 0.0875 258.48)",
+          "oklch(95% 0.0875 258.48)"
+        ]
       }
     },
     "typographyMeta": {
+      "display": {
+        "displayName": "display",
+        "purpose": "Título del anuncio público."
+      },
       "headline": {
-        "displayName": "Título de página",
-        "purpose": "Encabezado principal; escala menor en móvil."
+        "displayName": "headline",
+        "purpose": "Título del portafolio."
+      },
+      "property-title": {
+        "displayName": "property-title",
+        "purpose": "Nombre del inmueble en su espacio de gestión."
+      },
+      "section-title": {
+        "displayName": "section-title",
+        "purpose": "Encabezados de configuración y descripción pública."
+      },
+      "card-title": {
+        "displayName": "card-title",
+        "purpose": "Nombre del inmueble en tarjetas."
       },
       "body": {
-        "displayName": "Texto base",
-        "purpose": "Pila de sistema; el interlineado documentado corresponde a párrafos."
+        "displayName": "body",
+        "purpose": "Lectura y formularios."
       },
-      "metric": {
-        "displayName": "Cifra de resumen",
-        "purpose": "Cifras tabulares; puede envolver sin truncar."
+      "control": {
+        "displayName": "control",
+        "purpose": "Botones generales."
+      },
+      "label": {
+        "displayName": "label",
+        "purpose": "Etiquetas de formulario."
+      },
+      "price": {
+        "displayName": "price",
+        "purpose": "Canon de arriendo en el panel de contacto."
+      },
+      "marketing-display": {
+        "displayName": "Título comercial",
+        "purpose": "Hero de la portada, con saltos de línea explícitos; no usar en tablas."
+      },
+      "wizard-headline": {
+        "displayName": "Título de paso",
+        "purpose": "Orientación en el asistente de creación."
+      },
+      "marketing-body": {
+        "displayName": "Lectura comercial",
+        "purpose": "Párrafo principal de la portada, con ancho máximo de 43ch en escritorio."
       }
     },
     "shadows": [
       {
-        "name": "toast",
-        "value": "0 16px 55px rgba(21, 47, 36, 0.12)",
-        "purpose": "Confirmación flotante; variable --shadow."
+        "name": "overlay",
+        "value": "0 18px 60px rgba(8, 36, 78, 0.14)",
+        "purpose": "Paneles, diálogo de inventario y toast; variable --shadow."
       },
       {
-        "name": "panel",
-        "value": "-12px 0 45px rgba(17, 45, 30, 0.12)",
-        "purpose": "Separación del expediente lateral."
+        "name": "command-menu",
+        "value": "0 24px 80px rgba(8, 32, 70, 0.2)",
+        "purpose": "Buscador modal de comandos."
+      },
+      {
+        "name": "marketing-demo",
+        "value": "0 24px 60px rgba(13, 52, 112, 0.13)",
+        "purpose": "Demostración de producto dentro del hero comercial."
+      },
+      {
+        "name": "marketing-menu",
+        "value": "0 15px 40px rgba(13, 52, 112, 0.15)",
+        "purpose": "Navegación desplegada en la portada hasta 800px."
+      },
+      {
+        "name": "marketing-film",
+        "value": "0 24px 65px rgba(13, 52, 112, 0.13)",
+        "purpose": "Marco 16:9 del video comercial de problema y solución inmediatamente después del hero."
+      },
+      {
+        "name": "marketing-film-mobile",
+        "value": "0 16px 40px rgba(13, 52, 112, 0.1)",
+        "purpose": "Marco del video comercial hasta 800px."
       }
     ],
     "motion": [
       {
-        "name": "control",
-        "value": "0.18s ease",
-        "purpose": "Fondo y color del botón; borde de tarjeta."
+        "name": "button-state",
+        "value": "background 0.18s, color 0.18s",
+        "purpose": "Respuesta de botones."
       },
       {
-        "name": "mobile-navigation",
-        "value": "transform 0.22s ease",
-        "purpose": "Cajón móvil; cerrado también usa visibility:hidden."
+        "name": "card-border",
+        "value": "border-color 0.2s",
+        "purpose": "Hover de tarjetas."
       },
       {
-        "name": "panel-in",
-        "value": "0.28s cubic-bezier(0.16, 1, 0.3, 1)",
-        "purpose": "translateX(36px) a cero y clip-path izquierdo 10% a cero; sin salida animada."
+        "name": "photo-hover",
+        "value": "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Portada escala a 1.035 dentro de su recorte."
       },
       {
-        "name": "loading",
-        "value": "spin 1s linear infinite",
-        "purpose": "Indicador de carga."
+        "name": "command-entry",
+        "value": "0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Entrada desde translateY(-8px) y blur(2px) a valores cero."
       },
       {
         "name": "reduced-motion",
-        "value": "animation:none!important;transition:none!important;scroll-behavior:auto!important",
-        "purpose": "Aplicado a todos los elementos y pseudoelementos cuando prefers-reduced-motion:reduce."
+        "value": "animation: none !important; transition: none !important; scroll-behavior: auto !important",
+        "purpose": "Base global con prefers-reduced-motion: reduce. La landing conserva solo transiciones de fondo y color de 100ms en botones, enlaces de texto y modos de la demostración; desactiva transforms, animaciones y la vista previa automática del video."
+      },
+      {
+        "name": "marketing-camera-preview",
+        "value": "transform 5s cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Simulación iniciada por el visitante: scale(1) a scale(1.12). Desactivada con movimiento reducido."
+      },
+      {
+        "name": "faq-open",
+        "value": "transform 0.2s",
+        "purpose": "Icono gira a 45deg cuando details está abierto; respeta movimiento reducido."
+      },
+      {
+        "name": "marketing-ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Variable --motion-out, limitada a la portada comercial."
+      },
+      {
+        "name": "marketing-navigation-underline",
+        "value": "transform 220ms var(--motion-out)",
+        "purpose": "Subrayado de navegación de scaleX(0) a scaleX(1) en hover o foco visible."
+      },
+      {
+        "name": "marketing-action-arrow",
+        "value": "transform 240ms var(--motion-out)",
+        "purpose": "Flecha final de botones y enlaces: translate(3px, -3px) en hover; sin transformación con movimiento reducido."
+      },
+      {
+        "name": "marketing-photo-hover",
+        "value": "transform 700ms var(--motion-out)",
+        "purpose": "Foto del hero: scale(1.025) al pasar el cursor sobre la demostración; no mueve el contenedor."
+      },
+      {
+        "name": "capability-selection",
+        "value": "transform 300ms var(--motion-out)",
+        "purpose": "Subrayado de la capacidad seleccionada de scaleX(0) a scaleX(1)."
+      },
+      {
+        "name": "capability-entry",
+        "value": "350ms var(--motion-out)",
+        "purpose": "Cambio de panel desde opacity: 0.6 y blur(2px) hasta opacity: 1 y blur(0); desactivado con movimiento reducido."
+      },
+      {
+        "name": "film-chapter-progress",
+        "value": "transform 180ms linear",
+        "purpose": "Progreso scaleX de los seis capítulos narrativos del video, distribuidos en seis columnas en escritorio y una fila desplazable hasta 800px; actualización sin transición con movimiento reducido."
+      },
+      {
+        "name": "film-scroll-arrival",
+        "value": "animation-timeline: view(); animation-range: entry 0% entry 90%; animation-timing-function: linear",
+        "purpose": "Solo con soporte de view() y sin movimiento reducido: escala 0.985 a 1 y recorte lateral 1.5% a 0, conservando curvas de 16px."
+      },
+      {
+        "name": "relationship-scroll-line",
+        "value": "animation-timeline: view(); animation-range: entry 0% cover 40%; animation-timing-function: linear",
+        "purpose": "Línea azul sobre el mensaje de relaciones: scaleX(0.1) a scaleX(1), solo con soporte y sin movimiento reducido; contenido visible por defecto."
+      },
+      {
+        "name": "marketing-reduced-state",
+        "value": "background-color 100ms ease, color 100ms ease",
+        "purpose": "Excepción explícita para botones, enlaces de texto y modos de demostración con movimiento reducido; no conserva desplazamientos."
       }
     ],
     "breakpoints": [
       {
-        "name": "wide-min",
-        "value": "1450px"
+        "name": "wide-cover-min",
+        "value": "1600px"
       },
       {
-        "name": "compact-max",
-        "value": "1150px"
+        "name": "two-column-portfolio-max",
+        "value": "1250px"
       },
       {
-        "name": "stacked-max",
+        "name": "single-column-editor-max",
+        "value": "1050px"
+      },
+      {
+        "name": "drawer-and-public-stack-max",
         "value": "850px"
       },
       {
-        "name": "mobile-max",
-        "value": "680px"
+        "name": "mobile-studio-max",
+        "value": "600px"
+      },
+      {
+        "name": "wizard-wide-min",
+        "value": "1500px"
+      },
+      {
+        "name": "marketing-manifesto-min",
+        "value": "1440px"
+      },
+      {
+        "name": "marketing-compact-max",
+        "value": "1400px"
+      },
+      {
+        "name": "growth-compact-max",
+        "value": "1100px"
+      },
+      {
+        "name": "video-compact-max",
+        "value": "1000px"
+      },
+      {
+        "name": "marketing-stack-max",
+        "value": "800px"
+      },
+      {
+        "name": "growth-stack-max",
+        "value": "760px"
+      },
+      {
+        "name": "marketing-narrow-max",
+        "value": "390px"
       }
     ]
   },
   "components": [
     {
-      "name": "Primary button",
+      "name": "Botón principal",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Acción principal; se deshabilita durante el guardado.",
-      "html": "<button class=\"ds-primary\">Crear inmueble</button>",
-      "css": ".ds-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:10px 15px;border:1px solid var(--line,#dfe7e2);border-radius:8px;font-size:13px;font-weight:550;white-space:nowrap;cursor:pointer;transition:background .18s,color .18s;font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;background:var(--green,#235f4d);border-color:var(--green,#235f4d);color:#fff;}.ds-primary:hover{background:var(--green-dark,#194936);border-color:var(--green-dark,#194936);}.ds-primary:focus-visible{outline:3px solid #79b393;outline-offset:3px;}.ds-primary:disabled{cursor:wait;opacity:.55;}@media(prefers-reduced-motion:reduce){.ds-primary{transition:none;animation:none;}}"
+      "description": "Acción principal naranja con texto azul casi negro.",
+      "html": "<button class=\"ds-primary\">Guardar cambios</button>",
+      "css": ".ds-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:10px 15px;border-radius:9px;font-size:13px;font-weight:650;white-space:nowrap;cursor:pointer;transition:background .18s,color .18s;font-family:\"Manrope Variable\",Manrope,sans-serif;background:var(--accent,#ff5a00);color:var(--accent-ink,#071c3b);border:1px solid var(--accent,#ff5a00)}.ds-primary:hover{background:var(--accent-hover,#f25500);border-color:var(--accent-hover,#f25500)}.ds-primary:focus-visible{outline:3px solid #2563eb;outline-offset:3px;}.ds-primary:disabled{opacity:.55;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-primary{transition:none}}"
     },
     {
-      "name": "Secondary button",
+      "name": "Botón secundario",
       "kind": "button",
       "refersTo": "button-secondary",
-      "description": "Acción secundaria delimitada por borde.",
-      "html": "<button class=\"ds-secondary\">Nuevo contrato</button>",
-      "css": ".ds-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:10px 15px;border:1px solid var(--line,#dfe7e2);border-radius:8px;font-size:13px;font-weight:550;white-space:nowrap;cursor:pointer;transition:background .18s,color .18s;font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;background:var(--surface,#fff);color:var(--ink,#23342f);}.ds-secondary:hover{background:#edf2ef;}.ds-secondary:focus-visible{outline:3px solid #79b393;outline-offset:3px;}.ds-secondary:disabled{cursor:wait;opacity:.55;}@media(prefers-reduced-motion:reduce){.ds-secondary{transition:none;animation:none;}}"
+      "description": "Acción complementaria con borde.",
+      "html": "<button class=\"ds-secondary\">Ver anuncio</button>",
+      "css": ".ds-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:10px 15px;border-radius:9px;font-size:13px;font-weight:650;white-space:nowrap;cursor:pointer;transition:background .18s,color .18s;font-family:\"Manrope Variable\",Manrope,sans-serif;background:var(--surface,#fff);color:var(--ink,#10284d);border:1px solid var(--line,#d9e4f3)}.ds-secondary:hover{background:#eaf2ff}.ds-secondary:focus-visible{outline:3px solid #2563eb;outline-offset:3px;}.ds-secondary:disabled{opacity:.55;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-secondary{transition:none}}"
     },
     {
-      "name": "Text action",
+      "name": "Acción de texto",
       "kind": "button",
       "refersTo": "button-text",
-      "description": "Acción contextual con subrayado al pasar el cursor.",
-      "html": "<button class=\"ds-text\">Ver expediente</button>",
-      "css": ".ds-text{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;display:inline-flex;align-items:center;gap:7px;border:0;background:none;color:var(--green,#235f4d);font-weight:600;font-size:12px;padding:8px 0;white-space:nowrap;cursor:pointer;}.ds-text:hover{text-decoration:underline;text-underline-offset:4px;}.ds-text:focus-visible{outline:3px solid #79b393;outline-offset:3px;}.ds-text:disabled{cursor:wait;opacity:.55;}@media(prefers-reduced-motion:reduce){.ds-text{transition:none;animation:none;}}"
+      "description": "Enlace contextual sin contenedor.",
+      "html": "<button class=\"ds-text\">Agregar fotos</button>",
+      "css": ".ds-text{font-family:\"Manrope Variable\",Manrope,sans-serif;display:inline-flex;gap:7px;align-items:center;background:none;border:0;color:var(--green,#175cda);font-size:13px;font-weight:600;padding:8px 0;cursor:pointer}.ds-text:hover{text-decoration:underline}.ds-text:focus-visible{outline:3px solid #2563eb;outline-offset:3px;}"
     },
     {
-      "name": "Icon action",
-      "kind": "button",
-      "refersTo": "button-icon",
-      "description": "Control compacto con nombre accesible.",
-      "html": "<button class=\"ds-icon\" aria-label=\"Cerrar panel\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"m18 6-12 12M6 6l12 12\"/></svg></button>",
-      "css": ".ds-icon{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:7px;border:0;background:none;color:var(--ink,#23342f);cursor:pointer;}.ds-icon:hover{background:var(--green-soft,#eaf3ed);}.ds-icon:focus-visible{outline:3px solid #79b393;outline-offset:3px;}.ds-icon:disabled{cursor:wait;opacity:.55;}@media(prefers-reduced-motion:reduce){.ds-icon{transition:none;animation:none;}}"
-    },
-    {
-      "name": "Labeled field",
+      "name": "Campo de texto",
       "kind": "input",
       "refersTo": "input",
-      "description": "Etiqueta envolvente, control nativo y foco global; 16px en móvil.",
-      "html": "<label class=\"ds-field\"><span>Nombre del inmueble *</span><input required maxlength=\"200\" placeholder=\"Ej. Apartamento Cedritos 302\" /></label>",
-      "css": ".ds-field{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;display:flex;flex-direction:column;gap:8px;min-width:0;color:var(--ink,#23342f);}.ds-field>span{font-size:12px;font-weight:550;}.ds-field input{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;width:100%;min-width:0;border:1px solid #cddad1;border-radius:7px;background:#fff;padding:11px 12px;color:var(--ink,#23342f);font-size:13px;caret-color:var(--green,#235f4d);}.ds-field input::placeholder{color:#718077;opacity:1;}.ds-field input:focus-visible{outline:3px solid #79b393;outline-offset:3px;}@media(max-width:680px){.ds-field>span{font-size:11px;}.ds-field input{font-size:16px;}}"
+      "description": "Etiqueta explícita y campo blanco.",
+      "html": "<label class=\"ds-field\"><span>Nombre del inmueble</span><input value=\"\" placeholder=\"Nombre del inmueble\"></label>",
+      "css": ".ds-field{font-family:\"Manrope Variable\",Manrope,sans-serif;display:grid;gap:8px;color:var(--ink,#10284d)}.ds-field>span{font-size:13px;font-weight:600}.ds-field input{font-family:\"Manrope Variable\",Manrope,sans-serif;background:white;border:1px solid #c7d7ed;border-radius:9px;padding:11px 12px;font-size:14px;min-height:43px;color:var(--ink,#10284d);caret-color:var(--green,#175cda)}.ds-field input::placeholder{color:#5f7695}.ds-field input:focus{border-color:var(--green,#175cda)}.ds-field input:focus-visible{outline:3px solid #2563eb;outline-offset:3px;}"
     },
     {
-      "name": "Navigation item",
+      "name": "Navegación activa",
       "kind": "nav",
       "refersTo": "nav-active",
-      "description": "Selección por fondo, peso, color y aria-current.",
-      "html": "<nav class=\"ds-nav\" aria-label=\"Navegación principal\"><button class=\"ds-nav-item\" aria-current=\"page\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/></svg><span>Resumen</span></button></nav>",
-      "css": ".ds-nav{display:grid;gap:5px;}.ds-nav-item{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;display:flex;align-items:center;gap:12px;min-height:43px;padding:11px 13px;text-align:left;color:#61716a;border:0;background:none;border-radius:7px;font-size:13px;cursor:pointer;}.ds-nav-item:hover{background:#f4f7f5;}.ds-nav-item[aria-current=\"page\"]{background:var(--green-soft,#eaf3ed);color:var(--green,#235f4d);font-weight:650;}.ds-nav-item:focus-visible{outline:3px solid #79b393;outline-offset:3px;}"
+      "description": "Sección activa en la barra lateral.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Secciones\"><button aria-current=\"page\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z\"/><path d=\"M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2h-2M10 6h4M10 10h4M10 14h4M10 18h4\"/></svg>Inmuebles</button></nav>",
+      "css": ".ds-nav{background:#0b2148;color:#edf4ff}.ds-nav button{font-family:\"Manrope Variable\",Manrope,sans-serif;display:flex;align-items:center;gap:11px;min-height:44px;padding:12px 11px;border:0;border-radius:9px;font-size:13px;font-weight:550;cursor:pointer;color:#c2d5ef;background:transparent}.ds-nav button:hover{background:#163461}.ds-nav button[aria-current]{background:#1b427e;color:#ffffff}.ds-nav button:focus-visible{outline:3px solid #2563eb;outline-offset:3px;} .ds-nav button[aria-current] svg{color:var(--accent,#ff5a00);stroke-width:2.1}"
     },
     {
-      "name": "Semantic badge",
+      "name": "Estado neutral",
       "kind": "chip",
-      "refersTo": "badge",
-      "description": "Etiquetas informativas con palabra y punto; no son filtros.",
-      "html": "<div class=\"ds-badges\"><span class=\"ds-badge ds-green\"><i></i>Pagado</span><span class=\"ds-badge ds-blue\"><i></i>Abono parcial</span><span class=\"ds-badge ds-amber\"><i></i>Pendiente</span><span class=\"ds-badge ds-red\"><i></i>Vencido</span><span class=\"ds-badge\"><i></i>Anulado</span></div>",
-      "css": ".ds-badges{display:flex;gap:8px;flex-wrap:wrap;}.ds-badge{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;display:inline-flex;align-items:center;gap:6px;font-size:10px;padding:5px 8px;background:#eef1ef;border-radius:5px;font-weight:500;color:#5f6c65;line-height:1.25;}.ds-badge i{width:4px;height:4px;border-radius:50%;background:currentColor;}.ds-green{background:#eaf4ee;color:#2b6a46;}.ds-blue{background:#eaf1f7;color:#305c7c;}.ds-amber{background:#fbf1db;color:#866212;}.ds-red{background:#fbece7;color:#ac3737;}"
+      "refersTo": "badge-neutral",
+      "description": "Estado informativo, con palabra y punto.",
+      "html": "<span class=\"ds-badge\"><span></span>Archivado</span>",
+      "css": ".ds-badge{font-family:\"Manrope Variable\",Manrope,sans-serif;display:inline-flex;align-items:center;gap:6px;background:#eaf0f8;color:#526582;border-radius:5px;padding:5px 9px;font-size:11px;font-weight:650;line-height:1.25}.ds-badge>span{width:4px;height:4px;border-radius:50%;background:currentColor}"
     },
     {
-      "name": "Property card",
+      "name": "Tarjeta de inmueble",
       "kind": "card",
       "refersTo": "property-card",
-      "description": "Botón completo que abre el expediente; el hover cambia el borde.",
-      "html": "<button class=\"ds-property\"><div class=\"ds-property-top\">Tipo de inmueble</div><h2>Nombre del inmueble</h2><p>Ciudad · Dirección</p><div class=\"ds-property-features\">Área · Habitaciones · Baños</div><div class=\"ds-property-bottom\">Ver expediente <span aria-hidden=\"true\">↗</span></div></button>",
-      "css": ".ds-property{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;text-align:left;display:block;background:#fff;color:var(--ink,#23342f);border:1px solid var(--line,#dfe7e2);border-radius:var(--radius,14px);overflow:hidden;padding:21px 20px 0;transition:border-color .18s;cursor:pointer;}.ds-property:hover{border-color:#8dac99;}.ds-property-top{font-size:10px;color:var(--muted,#667770);margin-bottom:30px;}.ds-property h2{font-size:18px;font-weight:650;line-height:1.3;letter-spacing:-.02em;margin:0 0 9px;overflow-wrap:anywhere;}.ds-property p{font-size:11px;line-height:1.65;color:var(--muted,#667770);min-height:35px;}.ds-property-features{font-size:11px;color:var(--muted,#667770);margin-bottom:23px;}.ds-property-bottom{margin:0 -20px;padding:16px 20px;border-top:1px solid #edf1ee;font-size:11px;color:var(--green,#235f4d);display:flex;justify-content:space-between;gap:10px;}.ds-property:focus-visible{outline:3px solid #79b393;outline-offset:3px;}.ds-property:disabled{cursor:wait;opacity:.55;}@media(prefers-reduced-motion:reduce){.ds-property{transition:none;animation:none;}}"
+      "description": "Portada vacía honesta; no incluye fotografía ficticia.",
+      "html": "<article class=\"ds-property\"><button class=\"ds-property-open\"><span class=\"ds-photo-empty\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z\"/><path d=\"M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2h-2M10 6h4M10 10h4M10 14h4M10 18h4\"/></svg><span>Tu inmueble, en imágenes</span></span><span class=\"ds-property-copy\"><span class=\"ds-property-kind\">Apartamento</span><strong>Nombre del inmueble</strong><span class=\"ds-property-location\">Ciudad · Dirección</span></span></button></article>",
+      "css": ".ds-property{font-family:\"Manrope Variable\",Manrope,sans-serif;background:white;border:1px solid var(--line,#d9e4f3);border-radius:14px;overflow:hidden;max-width:380px;transition:border-color .2s}.ds-property:hover{border-color:#8daedf}.ds-property-open{font-family:\"Manrope Variable\",Manrope,sans-serif;display:block;width:100%;padding:0;border:0;text-align:left;background:none;color:var(--ink,#10284d);cursor:pointer}.ds-property-open:focus-visible{outline:3px solid #2563eb;outline-offset:3px;outline-offset:-3px}.ds-photo-empty{display:flex;height:210px;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:#e4edfb;color:#526b8c;font-size:12px}.ds-photo-empty svg{width:40px;height:40px;stroke-width:1}.ds-property-copy{display:block;padding:21px 21px 17px}.ds-property-kind{font-size:11px;color:#5b7292}.ds-property-copy strong{display:block;font-size:18px;font-weight:700;letter-spacing:-.02em;margin:7px 0 8px;overflow-wrap:anywhere}.ds-property-location{font-size:12px;color:var(--muted,#526b8c)}@media(prefers-reduced-motion:reduce){.ds-property{transition:none}}"
     },
     {
-      "name": "Dossier panel",
+      "name": "Carga de fotos del asistente",
+      "kind": "input",
+      "refersTo": "wizard-dropzone",
+      "description": "Carga explícita, borde discontinuo y foco para un primer paso fotográfico.",
+      "html": "<label class=\"ds-drop\"><strong>Arrastra tus fotos aquí</strong><span>o haz clic para elegirlas</span><small>JPG, PNG o WebP · Hasta 12 fotos</small><input type=\"file\" accept=\"image/jpeg,image/png,image/webp\" multiple aria-label=\"Elegir fotos del nuevo inmueble\"></label>",
+      "css": ".ds-drop{font-family:\"Manrope Variable\",Manrope,sans-serif;position:relative;display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center;padding:46px 20px;border:1px dashed #8aa9d6;border-radius:14px;background:#eaf2ff;color:var(--ink,#10284d);cursor:pointer;text-align:center;overflow:hidden}.ds-drop:hover{border-color:var(--green,#175cda);background:#dfeaff}.ds-drop:focus-within{outline:3px solid var(--green,#175cda);outline-offset:4px}.ds-drop input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}.ds-drop strong{font-size:19px}.ds-drop span,.ds-drop small{color:var(--muted,#526b8c)}.ds-drop small{font-size:12px;margin-top:14px}"
+    },
+    {
+      "name": "Columna de oportunidades",
       "kind": "custom",
-      "refersTo": "panel",
-      "description": "Fragmento visual del panel; foco contenido, cierre y bloqueo de scroll los gestiona React.",
-      "html": "<section class=\"ds-panel\"><header class=\"ds-panel-head\"><h2>Expediente del inmueble</h2><p>Contratos y documentos asociados.</p></header><div class=\"ds-panel-body\"><p>Aún no hay contratos para este inmueble.</p></div></section>",
-      "css": ".ds-panel{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;background:#fff;color:var(--ink,#23342f);width:min(600px,100vw);max-width:100%;overflow:auto;box-shadow:-12px 0 45px rgba(17,45,30,.12);animation:ds-panel-in .28s cubic-bezier(.16,1,.3,1);}.ds-panel-head{padding:28px 30px 23px;border-bottom:1px solid var(--line,#dfe7e2);}.ds-panel-head h2{font-size:23px;font-weight:650;letter-spacing:-.02em;margin:0 0 8px;overflow-wrap:anywhere;}.ds-panel-head p{font-size:12px;line-height:1.65;color:var(--muted,#667770);margin:0;}.ds-panel-body{padding:25px 30px;font-size:12px;color:var(--muted,#667770);}@keyframes ds-panel-in{from{transform:translateX(36px);clip-path:inset(0 0 0 10%);}to{transform:translateX(0);clip-path:inset(0);}}@media(max-width:680px){.ds-panel-head{padding:24px 21px 20px;}.ds-panel-head h2{font-size:21px;}.ds-panel-body{padding:24px 21px;}}@media(prefers-reduced-motion:reduce){.ds-panel{animation:none;}}"
+      "refersTo": "crm-stage",
+      "description": "Etapa con cantidad y vacío honesto dentro del tablero horizontal.",
+      "html": "<section class=\"ds-stage\"><header><h2>Nuevo</h2><span>0</span></header><p>Sin oportunidades</p></section>",
+      "css": ".ds-stage{font-family:\"Manrope Variable\",Manrope,sans-serif;width:235px;min-height:250px;padding:14px;border-radius:12px;background:#e7eef9;color:var(--ink,#10284d)}.ds-stage header{display:flex;justify-content:space-between;align-items:center;padding:0 4px 18px}.ds-stage h2{font-size:13px;font-weight:700;letter-spacing:-.02em;margin:0}.ds-stage header>span{font-size:12px;color:var(--muted,#526b8c)}.ds-stage>p{font-size:12px;text-align:center;color:var(--muted,#526b8c);padding:36px 0;line-height:1.65}"
+    },
+    {
+      "name": "Ajustes de video",
+      "kind": "custom",
+      "refersTo": "video-settings",
+      "description": "Modelo y estimación próximos a la acción de generación.",
+      "html": "<aside class=\"ds-video-settings\"><h3>Tu próxima pieza</h3><label><span>Modelo</span><select><option>Seedance Pro Fast · 720p</option><option>Grok Imagine · 480p</option><option>Grok Imagine HD · 720p</option><option>Kling 2.6 · 1080p</option></select></label><div class=\"ds-video-estimate\"><span>Costo estimado del proveedor</span><strong>US$ 0,00</strong><small>0 fotos · 0 segundos aprox.</small></div><button disabled>Generar por ≈ US$ 0,00</button></aside>",
+      "css": ".ds-video-settings{font-family:\"Manrope Variable\",Manrope,sans-serif;padding:24px;border:1px solid var(--line,#d9e4f3);border-radius:14px;background:white;color:var(--ink,#10284d)}.ds-video-settings h3{font-size:17px;font-weight:600;margin:0 0 16px}.ds-video-settings label{display:grid;gap:8px;font-size:13px;font-weight:600}.ds-video-settings select{font-family:\"Manrope Variable\",Manrope,sans-serif;font-size:14px;min-height:43px;padding:11px 12px;border:1px solid #c7d7ed;border-radius:9px;background:white;color:var(--ink,#10284d)}.ds-video-settings select:focus{border-color:var(--green,#175cda)}.ds-video-settings select:focus-visible{outline:3px solid #2563eb;outline-offset:3px;}.ds-video-estimate{border-top:1px solid var(--line,#d9e4f3);padding-top:22px;margin-top:22px;display:grid;gap:8px}.ds-video-estimate>span{font-size:12px;color:var(--muted,#526b8c)}.ds-video-estimate strong{font-size:28px;letter-spacing:-.02em}.ds-video-estimate small{font-size:11px;line-height:1.7;color:var(--muted,#526b8c)}.ds-video-settings button{font-family:\"Manrope Variable\",Manrope,sans-serif;margin-top:22px;background:var(--accent,#ff5a00);color:var(--accent-ink,#071c3b);border:1px solid var(--accent,#ff5a00);border-radius:9px;padding:10px 15px;min-height:42px;font-size:13px;font-weight:650;opacity:.55;cursor:not-allowed}"
     }
   ],
   "narrative": {
-    "northStar": "Expediente técnico de administración",
-    "overview": "Sistema extraído de app/globals.css y components/workspace.tsx. Superficies blancas, tinta verdosa y verde profundo; bordes y densidad tabular ordenan la información. La interacción característica abre un expediente lateral con contratos y documentos. No hay recursos raster de producto. La documentación de comportamiento móvil se basa en el código, sin certificación visual móvil.",
+    "northStar": "Property studio",
+    "overview": "Kevvio es la marca aprobada por el usuario el 10 de noviembre de 2026: palabra en minúsculas, monograma K y lema «Más negocio. Menos pendientes.». Presenta el portafolio como un estudio de inmuebles: fotografías reales, superficies blancas y azules pálidas, texto azul profundo y acciones principales en naranja intenso. La navegación y el acceso usan azul marino; el naranja solicitado por el usuario destaca también en los detalles de marca. Manrope aporta una voz contemporánea y cercana. La interfaz de gestión combina controles precisos con suficiente espacio para leer; el anuncio público concede más espacio a las imágenes y a la descripción. La portada comercial amplía la tipografía, combina una demostración interactiva con un video de tipografía cinética y conserva respuestas contenidas en sus controles; la creación guiada, Personas y Videos reutilizan los controles del estudio.\n\nLa gama azul y el naranja de alto impacto responden a la preferencia explícita del usuario y conservan la estructura y la tipografía del estudio. Este registro describe la cascada implementada: `app/layout.tsx` carga Manrope local y luego `globals.css`, `inventory.css`, `studio.css`, `growth.css` y `landing-motion.css`, en ese orden. Los tokens del frontmatter son normativos; la estrategia de cada superficie permanece en `.impeccable/surfaces/`. La landing con el nuevo video se inspeccionó con Playwright autorizado por el usuario en escritorio de 1440px y móvil de 390px; `.impeccable/review/landing/qa.json` registra las comprobaciones funcionales. El veredicto anterior «ship» resolvió la navegación fija de capacidades. La revisión final del nuevo video también concluyó «ship»: quedaron resueltas la legibilidad móvil con zonas libres para subtítulos y controles, y la documentación del relato de seis escenas. No se observaron regresiones de esas correcciones en las nuevas capturas; el veredicto cubre solo esas dos correcciones. Las superficies privadas siguen pendientes de revisión visual.",
     "keyCharacteristics": [
-      "Tipografía de sistema",
-      "Tarjetas planas con borde",
-      "Estados escritos y coloreados",
-      "Expediente y formularios laterales",
-      "Menú móvil cerrado con visibility:hidden"
+      "Una familia Manrope variable, alojada por la propia aplicación.",
+      "Gama azul con navegación marina y acciones principales naranja; colores semánticos reservados para estados.",
+      "Fotografías del usuario en la gestión; fotografía de catálogo identificada como ejemplo en la portada comercial.",
+      "Controles suavemente redondeados, divisores finos y tarjetas operativas planas.",
+      "Un inmueble como contexto continuo de configuración, fotos, inventario, anuncio y videos; Personas reúne la relación comercial."
     ],
     "rules": [
       {
-        "name": "Estado explícito",
-        "body": "Conservar palabras como Pagado, Vencido y Anulado; el color no sustituye la etiqueta.",
+        "name": "The Action and State Rule",
+        "body": "El naranja destaca acciones principales, el paso actual del asistente y detalles de marca; el azul sostiene enlaces y selección general. El verde semántico identifica vigencia o éxito. El estado conserva siempre su rótulo textual.",
         "section": "colors"
       },
       {
-        "name": "Cifras comparables",
-        "body": "COP sin decimales, cifras tabulares e importes alineados a la derecha en las celdas numéricas.",
+        "name": "The Shared Family Rule",
+        "body": "Usar Manrope en portada comercial, gestión, formularios y anuncio público; cambiar escala y densidad según el contexto, sin introducir otra familia de títulos.",
         "section": "typography"
       },
       {
-        "name": "Superposición con propósito",
-        "body": "Reservar sombras para panel y confirmación; las tarjetas se mantienen planas.",
+        "name": "The Film Safe Area Rule",
+        "body": "En el video comercial, los nombres esenciales de categorías usan 54px en el lienzo de 1280px, equivalentes a unos 14px al mostrarse a 342px de ancho. El contenido principal ocupa la mitad superior; la zona inferior reservada a subtítulos y controles nativos queda libre de texto esencial y de pies incrustados que compitan con ellos.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Surface Rule",
+        "body": "Las tarjetas operativas y los formularios permanecen planos. Las sombras separan capas superpuestas; la demostración y el video de la portada comercial usan sombras ambientales propias.",
         "section": "elevation"
       }
     ],
     "dos": [
-      "Usar los tokens y estados existentes.",
-      "Conservar los vacíos reales y acciones contextuales.",
-      "Mantener foco visible, control de teclado del panel y menú móvil cerrado no enfocable.",
-      "Verificar móvil renderizado después de cambios de layout."
+      "Do mantener Manrope, la gama azul, la navegación marina y el naranja intenso de las acciones principales en nuevas superficies.",
+      "Do conservar nombres y estados explícitos junto a sus iconos o colores.",
+      "Do usar fotos reales del inmueble en gestión y marcar como ilustrativas las fotografías comerciales; presentar un vacío honesto cuando falten datos propios.",
+      "Do mantener el foco visible, los nombres accesibles de los controles de icono y la alternativa de movimiento reducido.",
+      "Do permitir que títulos, importes y controles se adapten al ancho disponible.",
+      "Do mostrar estimaciones, estados de generación y límites de disponibilidad junto a la acción correspondiente."
     ],
     "donts": [
-      "No introducir fuentes remotas o fotografías de ejemplo para rellenar vacíos.",
-      "No sustituir etiquetas de estado por color solo.",
-      "No afirmar validación por campo ni interacciones que el código no implementa."
+      "Don't recuperar el verde como color principal de marca ni la tipografía de sistema como familia de títulos.",
+      "Don't introducir fotografías inventadas, texturas decorativas o datos ficticios en el portafolio real.",
+      "Don't aplicar sombras permanentes a tarjetas que en el sistema son planas.",
+      "Don't convertir metadatos pequeños o colores heredados aislados en nuevos tokens globales."
     ]
   }
 }

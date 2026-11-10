@@ -27,6 +27,11 @@ import { mkdir, writeFile, readFile, unlink } from "node:fs/promises";
 import { resolve, join } from "node:path";
 import { randomUUID } from "node:crypto";
 import { inventoryApi } from "@/lib/inventory-api";
+import { listingApi, publicListingApi } from "@/lib/listings";
+import { crmApi } from "@/lib/crm-api";
+import { propertyCreationApi } from "@/lib/property-creation";
+import { videoApi } from "@/lib/video-api";
+import { descriptionApi } from "@/lib/description-api";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 const uploads = () =>
@@ -99,8 +104,20 @@ async function handle(
       clearLoginRate("owner");
       return issueSession({ id: user.id, name: user.name }, req);
     }
+    const publicResponse = await publicListingApi(req, parts);
+    if (publicResponse) return publicResponse;
     const user = await userFor(req);
     if (!user) throw new AppError(401, "Inicia sesión para continuar.");
+    const videoResponse = await videoApi(req, parts, user.id);
+    if (videoResponse) return videoResponse;
+    const crmResponse = await crmApi(req, parts);
+    if (crmResponse) return crmResponse;
+    const creationResponse = await propertyCreationApi(req, parts);
+    if (creationResponse) return creationResponse;
+    const aiResponse = await descriptionApi(req, parts, user.id);
+    if (aiResponse) return aiResponse;
+    const listingResponse = await listingApi(req, parts);
+    if (listingResponse) return listingResponse;
     const inventoryResponse = await inventoryApi(req, parts);
     if (inventoryResponse) return inventoryResponse;
     if (route === "logout" && req.method === "POST") {
@@ -116,7 +133,7 @@ async function handle(
       const [properties, tenants, leases, charges, payments, documents] =
         await Promise.all([
           db.query(
-            "SELECT p.*,(SELECT id FROM property_photos WHERE property_id=p.id AND is_cover LIMIT 1) AS cover_photo_id FROM properties p ORDER BY p.created_at DESC",
+            "SELECT p.*,(SELECT id FROM property_photos WHERE property_id=p.id AND is_cover LIMIT 1) AS cover_photo_id,COALESCE(l.enabled AND (l.expires_on IS NULL OR l.expires_on >= (now() AT TIME ZONE 'America/Bogota')::date) AND p.archived_at IS NULL,false) AS listing_enabled, l.published->>'monthly_rent' AS listing_rent FROM properties p LEFT JOIN property_listings l ON l.property_id=p.id ORDER BY p.created_at DESC",
           ),
           db.query("SELECT * FROM tenants ORDER BY name"),
           db.query(
@@ -454,7 +471,7 @@ async function handle(
         {
           headers: {
             "Content-Type": "text/csv; charset=utf-8",
-            "Content-Disposition": `attachment; filename="raiz-cartera-${today()}.csv"`,
+            "Content-Disposition": `attachment; filename="kevvio-cartera-${today()}.csv"`,
             "Cache-Control": "no-store",
           },
         },

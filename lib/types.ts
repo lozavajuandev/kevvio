@@ -11,11 +11,13 @@ export type Property = {
   notes: string;
   archived_at: string | null;
   cover_photo_id?: string | null;
+  listing_enabled?: boolean;
+  listing_rent?: string | null;
 };
 export type Tenant = {
   id: string;
   name: string;
-  document: string;
+  document: string | null;
   email: string;
   phone: string;
   notes: string;

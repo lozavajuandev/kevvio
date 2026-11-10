@@ -1,0 +1,11 @@
+# Video dentro del inmueble
+Route: Videos tab of an existing property in `/app`. Sources: `components/video-studio.tsx`, `components/property-workspace.tsx`, `lib/video-models.ts`, `app/growth.css`. Mode: Operate.
+
+THESIS: Turn the property's selected photos into an ordered video, keeping model, estimated cost and progress visible beside the work.
+OWN-WORLD: Inherit Manrope, blue selection, orange primary action and navy media backgrounds. Use the existing form controls and photo-grid rhythm; keep generated media and status text together without a separate visual identity.
+STORY: Select up to six general property photos, order the scenes, choose model and movement, choose horizontal or vertical final format, read the estimate and explicitly generate. Kie receives the selected photos when generation is enabled. Follow each clip's status, then combine ready clips into an MP4 and download privately. A no-photo state links back to this property's Fotos tab.
+FIRST VIEWPORT: A three-column photo selector and ordered scene list next to a 320px settings panel, separated by 40px. The panel contains model details, movement, aspect ratio, estimated provider cost and a generation action that includes the estimate. Project history follows. At <=1000px settings narrow to 280px and clips use two columns; at <=760px the settings stack and clips use one column.
+FORM: Source-led direct construction, authorized by the user. Models come from the configured catalog; estimates are not guaranteed prices. Generation is disabled when Studio or provider setup is unavailable, no photos are selected, the property is archived, or submission is busy. Clips show explicit preparing/queued/processing/ready/failed/unknown labels. Videos stay private and do not automatically enter the public listing.
+FINISH: Source-grounded documentation only; no screenshots or visual approval. Later checks must inspect photo ordering, narrow screens, disabled service, partial failures, clip controls, completed MP4 and long estimates.
+
+Implementation boundary: Kie generates image-to-video scenes; local ffmpeg assembles them. The final composition preserves the full frame with margins where needed and has no audio. The landing's photo-motion demonstration is illustrative and is not evidence of a completed provider generation.

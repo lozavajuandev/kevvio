@@ -1,10 +1,20 @@
 import type { Metadata } from "next";
+import "@fontsource-variable/manrope";
 import "./globals.css";
 import "./inventory.css";
+import "./studio.css";
+import "./growth.css";
+import "./landing-motion.css";
 export const metadata: Metadata = {
-  title: "Raíz · Gestión de inmuebles",
+  applicationName: "Kevvio",
+  title: "Kevvio · Gestión de inmuebles",
   description:
     "Tu portafolio inmobiliario, sus arriendos, pagos y documentos en un solo lugar.",
+  openGraph: {
+    siteName: "Kevvio",
+    locale: "es_CO",
+    type: "website",
+  },
 };
 export default function RootLayout({
   children,
